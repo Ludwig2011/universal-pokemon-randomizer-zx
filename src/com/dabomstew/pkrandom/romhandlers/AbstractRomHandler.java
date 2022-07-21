@@ -1959,6 +1959,7 @@ public abstract class AbstractRomHandler implements RomHandler {
         boolean giveToImportantPokemon = settings.isRandomizeHeldItemsForImportantTrainerPokemon();
         boolean giveToRegularPokemon = settings.isRandomizeHeldItemsForRegularTrainerPokemon();
         boolean highestLevelOnly = settings.isHighestLevelGetsItemsForTrainers();
+        boolean betterMovesets = settings.isBetterTrainerMovesets();
 
         List<Move> moves = this.getMoves();
         Map<Integer, List<MoveLearnt>> movesets = this.getMovesLearnt();
@@ -3583,10 +3584,10 @@ public abstract class AbstractRomHandler implements RomHandler {
                 }
                 // if damagemove replace with sorted one
                 if(mv.power>0) {
-                    List<Move> damageMoves = pickList;
-                    for(Move m : damageMoves) {
-                        if (m.power <1) {
-                            damageMoves.remove(m);
+                    List<Move> damageMoves = new ArrayList<Move>();
+                    for(Move m : pickList) {
+                        if (m.power >0) {
+                            damageMoves.add(m);
                         }
                     }
                     Collections.sort(damageMoves, new Comparator<Move>() {
