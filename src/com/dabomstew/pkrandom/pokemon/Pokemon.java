@@ -46,6 +46,9 @@ public class Pokemon implements Comparable<Pokemon> {
     public boolean actuallyCosmetic = false;
     public List<Integer> realCosmeticFormNumbers = new ArrayList<>();
 
+    focus offense = null, defensive = null;
+    boolean isOffensive;
+
     public Type primaryType, secondaryType;
 
     public int hp, attack, defense, spatk, spdef, speed, special;
@@ -76,10 +79,40 @@ public class Pokemon implements Comparable<Pokemon> {
     // Must not rely on the state of this flag being preserved between calls.
     public boolean temporaryFlag;
 
-    public Pokemon() {
-        shuffledStatsOrder = Arrays.asList(0, 1, 2, 3, 4, 5);
-    }
+    Random r = new Random();
 
+    public Pokemon() {
+
+        isOffensive = r.nextBoolean();
+
+        switch (r.nextInt(3)) {
+            case 0:
+                offense = focus.ATK;
+                break;
+            case 1:
+                offense = focus.SP_ATK;
+                break;
+            case 2:
+                offense = focus.H_ATK;
+                break;
+
+        }
+
+        switch (r.nextInt(3)) {
+            case 0:
+                defensive = focus.DEF;
+                break;
+            case 1:
+                defensive = focus.SP_DEF;
+                break;
+            case 2:
+                defensive = focus.H_DEF;
+                break;
+        }
+
+        shuffledStatsOrder = Arrays.asList(0, 1, 2, 3, 4, 5);
+
+    }
     public void shuffleStats(Random random) {
         Collections.shuffle(shuffledStatsOrder, random);
         applyShuffledOrderToStats();
@@ -99,6 +132,27 @@ public class Pokemon implements Comparable<Pokemon> {
         applyShuffledOrderToStats();
     }
 
+    private int bstBoost() {
+        int boost = 0;
+
+        if (!isOffensive) {
+            boost +=20;
+        }
+
+        if( offense == focus.H_ATK) {
+            boost += 50;
+        }
+
+        if( defensive == focus.H_DEF) {
+            boost += 30;
+        }
+        return boost;
+    }
+
+    private enum focus {
+        ATK, SP_ATK, H_ATK, DEF, SP_DEF, H_DEF
+    }
+
     protected void applyShuffledOrderToStats() {
         List<Integer> stats = Arrays.asList(hp, attack, defense, spatk, spdef, speed);
 
@@ -111,30 +165,29 @@ public class Pokemon implements Comparable<Pokemon> {
         speed = stats.get(shuffledStatsOrder.get(5));
     }
 
+    public double myNextDouble(double origin, double bound,Random random) {
+        double r = random.nextDouble();
+        if (origin < bound) {
+            r = r * (bound - origin) + origin;
+            if (r >= bound) // correct for rounding
+                r = Double.longBitsToDouble(Double.doubleToLongBits(bound) - 1);
+        }
+        return r;
+    }
+
     public void randomizeStatsWithinBST(Random random) {
-        if (number == Species.shedinja) {
-            // Shedinja is horribly broken unless we restrict him to 1HP.
-            int bst = bst() - 51;
-
-            // Make weightings
-            double atkW = random.nextDouble(), defW = random.nextDouble();
-            double spaW = random.nextDouble(), spdW = random.nextDouble(), speW = random.nextDouble();
-
-            double totW = atkW + defW + spaW + spdW + speW;
-
-            hp = 1;
-            attack = (int) Math.max(1, Math.round(atkW / totW * bst)) + 10;
-            defense = (int) Math.max(1, Math.round(defW / totW * bst)) + 10;
-            spatk = (int) Math.max(1, Math.round(spaW / totW * bst)) + 10;
-            spdef = (int) Math.max(1, Math.round(spdW / totW * bst)) + 10;
-            speed = (int) Math.max(1, Math.round(speW / totW * bst)) + 10;
-        } else {
             // Minimum 20 HP, 10 everything else
-            int bst = bst() - 70;
+            int bst = bst() - 70 + bstBoost();
 
             // Make weightings
-            double hpW = random.nextDouble(), atkW = random.nextDouble(), defW = random.nextDouble();
-            double spaW = random.nextDouble(), spdW = random.nextDouble(), speW = random.nextDouble();
+            double hpW, atkW, defW, spaW, spdW, speW;
+
+            hpW = myNextDouble(isOffensive ? 0 : 0.5, isOffensive ? 0.5 : 1,random);
+            atkW = myNextDouble((offense == focus.ATK ? offense == focus.SP_ATK ? 0.75 : 0 : 0.75) - (!isOffensive ? 0.25 : 0), (offense == focus.ATK ? offense == focus.SP_ATK ? 1 : 0.25 : 1) - (!isOffensive ? 0.25 : 0),random);
+            spaW = myNextDouble((offense == focus.ATK ? offense == focus.SP_ATK ? 0 : 0.75 : 0.75) - (!isOffensive ? 0.25 : 0), (offense == focus.ATK ? offense == focus.SP_ATK ? 0.25 : 1 : 1) - (!isOffensive ? 0.25 : 0),random);
+            defW = myNextDouble((defensive == focus.DEF ? defensive == focus.SP_DEF ? 0.75 : 0.33 : 0.75) - (isOffensive ? 0.25 : 0), (defensive == focus.DEF ? defensive == focus.SP_DEF ? 1 : 0.66 : 1) - (isOffensive ? 0.25 : 0),random);
+            spdW = myNextDouble((defensive == focus.DEF ? defensive == focus.SP_DEF ? 0.33 : 0.75 : 0.75) - (isOffensive ? 0.25 : 0), (defensive == focus.DEF ? defensive == focus.SP_DEF ? 0.66 : 1 : 1) - (isOffensive ? 0.25 : 0),random);
+            speW = random.nextDouble();
 
             double totW = hpW + atkW + defW + spaW + spdW + speW;
 
@@ -144,7 +197,19 @@ public class Pokemon implements Comparable<Pokemon> {
             spatk = (int) Math.max(1, Math.round(spaW / totW * bst)) + 10;
             spdef = (int) Math.max(1, Math.round(spdW / totW * bst)) + 10;
             speed = (int) Math.max(1, Math.round(speW / totW * bst)) + 10;
-        }
+
+        //makes speedy pokemon stronger
+        //double[] weights =  {hpW,atkW,defW,spaW,spdW};
+        //int countLessThanSpeed = 0;
+        //for (double w : weights){
+        //    if (w<speW) {
+        //        countLessThanSpeed++;
+        //    }
+        //}
+        //if (countLessThanSpeed>4) {
+        //    attack +=10;
+        //    spatk +=10;
+        //}
 
         // Check for something we can't store
         if (hp > 255 || attack > 255 || defense > 255 || spatk > 255 || spdef > 255 || speed > 255) {
@@ -155,10 +220,19 @@ public class Pokemon implements Comparable<Pokemon> {
     }
 
     public void copyRandomizedStatsUpEvolution(Pokemon evolvesFrom) {
+
+        evolvesFrom.isOffensive =isOffensive;
+        evolvesFrom.defensive = defensive;
+        evolvesFrom.offense = offense;
+        randomizeStatsWithinBST(new Random());
         double ourBST = bst();
         double theirBST = evolvesFrom.bst();
 
         double bstRatio = ourBST / theirBST;
+
+        if(bstRatio<1.2) {
+            bstRatio = Math.max(myNextDouble(bstRatio, 1.2, r),myNextDouble(1.1, 1.2, r));
+        }
 
         hp = (int) Math.min(255, Math.max(1, Math.round(evolvesFrom.hp * bstRatio)));
         attack = (int) Math.min(255, Math.max(1, Math.round(evolvesFrom.attack * bstRatio)));
@@ -176,9 +250,14 @@ public class Pokemon implements Comparable<Pokemon> {
         double bstDiff = ourBST - theirBST;
 
         // Make weightings
-        double hpW = random.nextDouble(), atkW = random.nextDouble(), defW = random.nextDouble();
-        double spaW = random.nextDouble(), spdW = random.nextDouble(), speW = random.nextDouble();
+        double hpW, atkW, defW, spaW, spdW, speW;
 
+        hpW = myNextDouble(isOffensive ? 0 : 0.5, isOffensive ? 0.5 : 1,random);
+        atkW = myNextDouble((offense == focus.ATK ? offense == focus.SP_ATK ? 0.75 : 0 : 0.75) - (!isOffensive ? 0.25 : 0), (offense == focus.ATK ? offense == focus.SP_ATK ? 1 : 0.25 : 1) - (!isOffensive ? 0.25 : 0),random);
+        spaW = myNextDouble((offense == focus.ATK ? offense == focus.SP_ATK ? 0 : 0.75 : 0.75) - (!isOffensive ? 0.25 : 0), (offense == focus.ATK ? offense == focus.SP_ATK ? 0.25 : 1 : 1) - (!isOffensive ? 0.25 : 0),random);
+        defW = myNextDouble((defensive == focus.DEF ? defensive == focus.SP_DEF ? 0.75 : 0.33 : 0.75) - (isOffensive ? 0.25 : 0), (defensive == focus.DEF ? defensive == focus.SP_DEF ? 1 : 0.66 : 1) - (isOffensive ? 0.25 : 0),random);
+        spdW = myNextDouble((defensive == focus.DEF ? defensive == focus.SP_DEF ? 0.33 : 0.75 : 0.75) - (isOffensive ? 0.25 : 0), (defensive == focus.DEF ? defensive == focus.SP_DEF ? 0.66 : 1 : 1) - (isOffensive ? 0.25 : 0),random);
+        speW = random.nextDouble();
         double totW = hpW + atkW + defW + spaW + spdW + speW;
 
         double hpDiff = Math.round((hpW / totW) * bstDiff);
@@ -197,13 +276,22 @@ public class Pokemon implements Comparable<Pokemon> {
     }
 
     protected int bst() {
-        return hp + attack + defense + spatk + spdef + speed;
+        int bst = hp + attack + defense + spatk + spdef + speed;
+        // All hail king Dunsparce
+        if (number == 206) {
+            bst +=150;
+        }
+        // fully evolved base stats atleast 500
+        if (evolutionsFrom.size()==0&&bst<500) {
+            bst = 500;
+        }
+        return bst;
     }
 
     public int bstForPowerLevels() {
         // Take into account Shedinja's purposefully nerfed HP
-        if (number == Species.shedinja) {
-            return (attack + defense + spatk + spdef + speed) * 6 / 5;
+        if (number == Species.dunsparce) {
+            return 260;
         } else {
             return hp + attack + defense + spatk + spdef + speed;
         }
