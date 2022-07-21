@@ -445,6 +445,11 @@ public abstract class AbstractRomHandler implements RomHandler {
                         }
                     }
                 }
+                if(pk.secondaryType == null){
+                    pk.name = pk.name.substring(0, Math.min(3, pk.name.length())).concat(" " + pk.primaryType.toString().substring(0, 3));
+                }else {
+                    pk.name = pk.name.substring(0, Math.min(3, pk.name.length())).concat(" " + pk.primaryType.toString().substring(0, 3) + pk.secondaryType.toString().substring(0, 3));
+                }
             }, (evFrom, evTo, toMonIsFinalEvo) -> {
                 evTo.primaryType = evFrom.primaryType;
                 evTo.secondaryType = evFrom.secondaryType;
@@ -457,6 +462,11 @@ public abstract class AbstractRomHandler implements RomHandler {
                             evTo.secondaryType = randomType();
                         }
                     }
+                }
+                if(evTo.secondaryType == null){
+                    evTo.name = evTo.name.substring(0, Math.min(3, evTo.name.length())).concat(" " + evTo.primaryType.toString().substring(0, 3));
+                }else {
+                    evTo.name = evTo.name.substring(0, Math.min(3, evTo.name.length())).concat(" " + evTo.primaryType.toString().substring(0, 3) + evTo.secondaryType.toString().substring(0, 3));
                 }
             });
         } else {
@@ -471,6 +481,11 @@ public abstract class AbstractRomHandler implements RomHandler {
                             pkmn.secondaryType = randomType();
                         }
                     }
+                }
+                if(pkmn.secondaryType == null){
+                    pkmn.name = pkmn.name.substring(0, Math.min(3, pkmn.name.length())).concat(" " + pkmn.primaryType.toString().substring(0, 3));
+                }else {
+                    pkmn.name = pkmn.name.substring(0, Math.min(3, pkmn.name.length())).concat(" " + pkmn.primaryType.toString().substring(0, 3) + pkmn.secondaryType.toString().substring(0, 3));
                 }
             }
         }
@@ -1785,8 +1800,11 @@ public abstract class AbstractRomHandler implements RomHandler {
                 // This is the first rival in Yellow. His Pokemon is used to determine the non-player
                 // starter, so we can't change it here. Just skip it.
                 continue;
+            } else if(t.tag.endsWith("_LEADER")) {
+                while (t.pokemon.size() < 6) {
+                    t.pokemon.add(t.pokemon.get(t.pokemon.size() - 1).copy());
+                }
             }
-
             // If type themed, give a type to each unassigned trainer
             Type typeForTrainer = trainerTypes.get(t);
             if (typeForTrainer == null && isTypeThemed) {
@@ -2809,27 +2827,57 @@ public abstract class AbstractRomHandler implements RomHandler {
         List<Move> moves = this.getMoves();
         for (Move mv : moves) {
             if (mv != null && mv.internalId != Moves.struggle && mv.power >= 10) {
-                // "Generic" damaging move to randomize power
-                if (random.nextInt(3) != 2) {
-                    // "Regular" move
-                    mv.power = random.nextInt(11) * 5 + 50; // 50 ... 100
-                } else {
-                    // "Extreme" move
-                    mv.power = random.nextInt(27) * 5 + 20; // 20 ... 150
+                //if (random.nextInt(3) != 2) {
+                //    // "Regular" move
+                //    mv.power = random.nextInt(11) * 5 + 50; // 50 ... 100
+                //} else {
+                //    // "Extreme" move
+                //    mv.power = random.nextInt(27) * 5 + 20; // 20 ... 150
+                //}
+//High power level
+                //switch (random.nextInt(3)) {
+                //case 0:
+                //    mv.power = random.nextInt(9) * 5 + 30; // 30 ... 70
+                //    break;
+                //case 1:
+                //    mv.power = random.nextInt(11) * 5 + 50; // 50 ... 100
+                //    break;
+                //case 2:
+                //    mv.power = random.nextInt(11) * 5 + 70; // 70 ... 120
+                //    break;
+                //
+                //}
+                //if (random.nextInt(10) == 0) {
+                //    mv.power += random.nextInt(6) * 5 + 5; // 10% chance of + 5 ... 30
+                //}
+
+                //low power level
+                switch (random.nextInt(4)) {
+                    case 0:
+                        mv.power = random.nextInt(9) * 5 + 30; // 30 ... 70
+                        break;
+                    case 1:
+                        mv.power = random.nextInt(5) * 5 + 50; // 50 ... 70
+                        break;
+                    case 2:
+                        mv.power = random.nextInt(9) * 5 + 50; // 50 ... 90
+                        break;
+                    case 3:
+                        mv.power = random.nextInt(9) * 5 + 80; // 80 ... 120
+                        if (random.nextInt(10) == 0) {
+                            mv.power += random.nextInt(6) * 5 + 5; // 10% chance of + 5 ... 30
+                        }
+                        break;
+
                 }
-                // Tiny chance for massive power jumps
-                for (int i = 0; i < 2; i++) {
-                    if (random.nextInt(100) == 0) {
-                        mv.power += 50;
-                    }
-                }
+
 
                 if (mv.hitCount != 1) {
                     // Divide randomized power by average hit count, round to
                     // nearest 5
                     mv.power = (int) (Math.round(mv.power / mv.hitCount / 5) * 5);
-                    if (mv.power == 0) {
-                        mv.power = 5;
+                    if (mv.power <= 25) {
+                        mv.power = 25;
                     }
                 }
             }
@@ -2845,8 +2893,8 @@ public abstract class AbstractRomHandler implements RomHandler {
                     // "average" PP: 15-25
                     mv.pp = random.nextInt(3) * 5 + 15;
                 } else {
-                    // "extreme" PP: 5-40
-                    mv.pp = random.nextInt(8) * 5 + 5;
+                    // "extreme" PP: 10-40
+                    mv.pp = random.nextInt(7) * 5 + 10;
                 }
             }
         }
@@ -2862,27 +2910,27 @@ public abstract class AbstractRomHandler implements RomHandler {
                 // Designed to limit the chances of 100% accurate OHKO moves and
                 // keep a decent base of 100% accurate regular moves.
 
-                if (mv.hitratio <= 50) {
-                    // lowest tier (acc <= 50)
+                if (mv.hitratio < 70) {
+                    // lowest tier (acc <= 70)
                     // new accuracy = rand(20...50) inclusive
                     // with a 10% chance to increase by 50%
-                    mv.hitratio = random.nextInt(7) * 5 + 20;
+                    //mv.hitratio = random.nextInt(7) * 5 + 20;
                     if (random.nextInt(10) == 0) {
                         mv.hitratio = (mv.hitratio * 3 / 2) / 5 * 5;
                     }
                 } else if (mv.hitratio < 90) {
-                    // middle tier (50 < acc < 90)
+                    // middle tier (70 < acc < 90)
                     // count down from 100% to 20% in 5% increments with 20%
                     // chance to "stop" and use the current accuracy at each
                     // increment
                     // gives decent-but-not-100% accuracy most of the time
                     mv.hitratio = 100;
-                    while (mv.hitratio > 20) {
-                        if (random.nextInt(10) < 2) {
-                            break;
-                        }
-                        mv.hitratio -= 5;
-                    }
+                    //while (mv.hitratio > 20) {
+                    //    if (random.nextInt(10) < 4) {
+                    //        break;
+                    //    }
+                    //    mv.hitratio -= 5;
+                    //}
                 } else {
                     // highest tier (90 <= acc <= 100)
                     // count down from 100% to 20% in 5% increments with 40%
@@ -2890,12 +2938,12 @@ public abstract class AbstractRomHandler implements RomHandler {
                     // increment
                     // gives high accuracy most of the time
                     mv.hitratio = 100;
-                    while (mv.hitratio > 20) {
-                        if (random.nextInt(10) < 4) {
-                            break;
-                        }
-                        mv.hitratio -= 5;
-                    }
+                    //while (mv.hitratio > 20) {
+                    //    if (random.nextInt(10) < 4) {
+                    //        break;
+                    //    }
+                    //    mv.hitratio -= 5;
+                    //}
                 }
             }
         }
@@ -3482,6 +3530,36 @@ public abstract class AbstractRomHandler implements RomHandler {
                 while (learnt.contains(mv.number)) {
                     mv = pickList.get(random.nextInt(pickList.size()));
                 }
+                // if damagemove replace with sorted one
+                if(mv.power>0) {
+                    List<Move> damageMoves = pickList;
+                    for(Move m : damageMoves) {
+                        if (m.power <1) {
+                            damageMoves.remove(m);
+                        }
+                    }
+                    Collections.sort(damageMoves, new Comparator<Move>() {
+
+                        @Override
+                        public int compare(Move m1, Move m2) {
+                            if (m1.power * m1.hitCount < m2.power * m2.hitCount) {
+                                return -1;
+                            } else if (m1.power * m1.hitCount > m2.power * m2.hitCount) {
+                                return 1;
+                            } else {
+                                // stay with the random order
+                                return 0;
+                            }
+                        }
+                    });
+
+                    for (int j = 0; j < damageMoves.size(); j++) {
+                        mv = damageMoves.get(j);
+                        if(!learnt.contains(mv.number)) {
+                            break;
+                        }
+                    }
+                }
 
                 if (i == lv1index) {
                     lv1AttackingMove = mv.number;
@@ -3492,16 +3570,16 @@ public abstract class AbstractRomHandler implements RomHandler {
 
             }
 
-            Collections.shuffle(learnt, random);
-            if (learnt.get(lv1index) != lv1AttackingMove) {
-                for (int i = 0; i < learnt.size(); i++) {
-                    if (learnt.get(i) == lv1AttackingMove) {
-                        learnt.set(i, learnt.get(lv1index));
-                        learnt.set(lv1index, lv1AttackingMove);
-                        break;
-                    }
-                }
-            }
+//            Collections.shuffle(learnt, random);
+//            if (learnt.get(lv1index) != lv1AttackingMove) {
+//                for (int i = 0; i < learnt.size(); i++) {
+//                    if (learnt.get(i) == lv1AttackingMove) {
+//                        learnt.set(i, learnt.get(lv1index));
+//                        learnt.set(lv1index, lv1AttackingMove);
+//                        break;
+//                    }
+//                }
+//            }
 
             // write all moves for the pokemon
             for (int i = 0; i < learnt.size(); i++) {
