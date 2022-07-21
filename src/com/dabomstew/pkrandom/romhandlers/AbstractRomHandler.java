@@ -1800,10 +1800,6 @@ public abstract class AbstractRomHandler implements RomHandler {
                 // This is the first rival in Yellow. His Pokemon is used to determine the non-player
                 // starter, so we can't change it here. Just skip it.
                 continue;
-            } else if(t.tag.endsWith("_LEADER")) {
-                while (t.pokemon.size() < 6) {
-                    t.pokemon.add(t.pokemon.get(t.pokemon.size() - 1).copy());
-                }
             }
             // If type themed, give a type to each unassigned trainer
             Type typeForTrainer = trainerTypes.get(t);
@@ -3532,10 +3528,10 @@ public abstract class AbstractRomHandler implements RomHandler {
                 }
                 // if damagemove replace with sorted one
                 if(mv.power>0) {
-                    List<Move> damageMoves = pickList;
-                    for(Move m : damageMoves) {
-                        if (m.power <1) {
-                            damageMoves.remove(m);
+                    List<Move> damageMoves = new ArrayList<Move>();
+                    for(Move m : pickList) {
+                        if (m.power >0) {
+                            damageMoves.add(m);
                         }
                     }
                     Collections.sort(damageMoves, new Comparator<Move>() {
