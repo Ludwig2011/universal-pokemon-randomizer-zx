@@ -926,7 +926,7 @@ public class Randomizer {
                 abSpFormat = "%-16s";
             }
 
-            log.print("NUM|NAME" + nameSp + "|TYPE             |  HP| ATK| DEF|SATK|SDEF| SPD");
+            log.print("NUM|NAME" + nameSp + "|TYPE             |  HP| ATK| DEF|SATK|SDEF| SPD| BST");
             int abils = romHandler.abilitiesPerPokemon();
             for (int i = 0; i < abils; i++) {
                 log.print("|ABILITY" + (i + 1) + abSp);
@@ -941,8 +941,8 @@ public class Randomizer {
                     if (pkmn.secondaryType != null) {
                         typeString += "/" + pkmn.secondaryType.toString();
                     }
-                    log.printf("%3d|" + nameSpFormat + "|%-17s|%4d|%4d|%4d|%4d|%4d|%4d", i, pkmn.fullName(), typeString,
-                            pkmn.hp, pkmn.attack, pkmn.defense, pkmn.spatk, pkmn.spdef, pkmn.speed);
+                    log.printf("%3d|" + nameSpFormat + "|%-17s|%4d|%4d|%4d|%4d|%4d|%4d|%4d", i, pkmn.fullName(), typeString,
+                            pkmn.hp, pkmn.attack, pkmn.defense, pkmn.spatk, pkmn.spdef, pkmn.speed, pkmn.hp + pkmn.attack+ pkmn.defense+ pkmn.speed+ pkmn.spatk+ pkmn.spdef);
                     if (abils > 0) {
                         log.printf("|" + abSpFormat + "|" + abSpFormat, romHandler.abilityName(pkmn.ability1),
                                 pkmn.ability1 == pkmn.ability2 ? "--" : romHandler.abilityName(pkmn.ability2));
