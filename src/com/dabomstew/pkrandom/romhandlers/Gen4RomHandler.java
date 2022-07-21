@@ -94,6 +94,7 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
 
         private int getInt(String key) {
             if (!numbers.containsKey(key)) {
+                System.out.println("no key");
                 numbers.put(key, 0);
             }
             return numbers.get(key);
@@ -5413,15 +5414,75 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
                 log("--Updating Type Effectiveness--");
                 for (TypeRelationship relationship : typeEffectivenessTable) {
                     // Change Ghost 0.5x against Steel to Ghost 1x to Steel
-                    if (relationship.attacker == Type.GHOST && relationship.defender == Type.STEEL) {
+                    if (relationship.attacker == Type.PSYCHIC && relationship.defender == Type.STEEL) {
                         relationship.effectiveness = Effectiveness.NEUTRAL;
-                        log("Replaced: Ghost not very effective vs Steel => Ghost neutral vs Steel");
+                        log("Replaced: Psychic not very effective vs Steel => Psychic neutral vs Steel");
                     }
-
                     // Change Dark 0.5x against Steel to Dark 1x to Steel
                     else if (relationship.attacker == Type.DARK && relationship.defender == Type.STEEL) {
                         relationship.effectiveness = Effectiveness.NEUTRAL;
-                        log("Replaced: Dark not very effective vs Steel => Dark neutral vs Steel");
+                    }
+                    // Ice resists water, dragon and ground
+                    else if (relationship.attacker == Type.WATER && relationship.defender == Type.ICE) {
+                        relationship.effectiveness = Effectiveness.HALF;
+                    }
+                    else if (relationship.attacker == Type.DRAGON && relationship.defender == Type.ICE) {
+                        relationship.effectiveness = Effectiveness.HALF;
+                    }
+                    else if (relationship.attacker == Type.GROUND && relationship.defender == Type.ICE) {
+                        relationship.effectiveness = Effectiveness.HALF;
+                    }
+                    // Ice neutral against water
+                    else if (relationship.attacker == Type.ICE && relationship.defender == Type.WATER) {
+                        relationship.effectiveness = Effectiveness.NEUTRAL;
+                    }
+                    // Poison strong against fighting
+                    else if (relationship.attacker == Type.POISON && relationship.defender == Type.FIGHTING) {
+                        relationship.effectiveness = Effectiveness.DOUBLE;
+                    }
+                    // Poison strong against water
+                    else if (relationship.attacker == Type.POISON && relationship.defender == Type.WATER) {
+                        relationship.effectiveness = Effectiveness.DOUBLE;
+                    }
+                    // Poison resists against water
+                    else if (relationship.attacker == Type.WATER && relationship.defender == Type.POISON) {
+                        relationship.effectiveness = Effectiveness.HALF;
+                    }
+                    // Poison neutral against grass
+                    else if (relationship.attacker == Type.POISON && relationship.defender == Type.GRASS) {
+                        relationship.effectiveness = Effectiveness.NEUTRAL;
+                    }
+                    // Poison neutral against ground
+                    else if (relationship.attacker == Type.POISON && relationship.defender == Type.GROUND) {
+                        relationship.effectiveness = Effectiveness.NEUTRAL;
+                    }
+                    // Bug strong against Dragon
+                    else if (relationship.attacker == Type.BUG && relationship.defender == Type.DRAGON) {
+                        relationship.effectiveness = Effectiveness.DOUBLE;
+                    }
+                    // Bug immune Dragon
+                    else if (relationship.attacker == Type.DRAGON && relationship.defender == Type.BUG) {
+                        relationship.effectiveness = Effectiveness.ZERO;
+                    }
+                    // Rock resists Rock
+                    else if (relationship.attacker == Type.ROCK && relationship.defender == Type.ROCK) {
+                        relationship.effectiveness = Effectiveness.HALF;
+                    }
+                    // Rock resists Bug
+                    else if (relationship.attacker == Type.BUG && relationship.defender == Type.ROCK) {
+                        relationship.effectiveness = Effectiveness.HALF;
+                    }
+                    // Fighting resists Steel
+                    else if (relationship.attacker == Type.STEEL && relationship.defender == Type.FIGHTING) {
+                        relationship.effectiveness = Effectiveness.HALF;
+                    }
+                    // Ground resists Fire
+                    else if (relationship.attacker == Type.FIRE && relationship.defender == Type.GROUND) {
+                        relationship.effectiveness = Effectiveness.HALF;
+                    }
+                    // Ground resists Steel
+                    else if (relationship.attacker == Type.STEEL && relationship.defender == Type.GROUND) {
+                        relationship.effectiveness = Effectiveness.HALF;
                     }
                 }
                 logBlankLine();
