@@ -5405,21 +5405,61 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
         }
     }
 
+    private boolean exists(List<TypeRelationship> typeEffectivenessTable, TypeRelationship typeRelationship){
+        return typeEffectivenessTable.stream().anyMatch(tp -> tp.equalTypes(typeRelationship.attacker,typeRelationship.defender));
+    }
+
     private void updateTypeEffectiveness() {
         try {
             byte[] battleOverlay = readOverlay(romEntry.getInt("BattleOvlNumber"));
             int typeEffectivenessTableOffset = find(battleOverlay, Gen4Constants.typeEffectivenessTableLocator);
             if (typeEffectivenessTableOffset > 0) {
                 List<TypeRelationship> typeEffectivenessTable = readTypeEffectivenessTable(battleOverlay, typeEffectivenessTableOffset);
+                List<TypeRelationship> wantedRelations = new ArrayList<>();
+                wantedRelations.add(new TypeRelationship(Type.WATER,Type.ICE,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.DRAGON,Type.ICE,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.GROUND,Type.ICE,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.ICE,Type.WATER,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.POISON,Type.FIGHTING,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.POISON,Type.WATER,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.WATER,Type.POISON,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.POISON,Type.WATER,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.POISON,Type.WATER,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.BUG,Type.DRAGON,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.DRAGON,Type.BUG,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.ROCK,Type.ROCK,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.BUG,Type.ROCK,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.STEEL,Type.FIGHTING,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.FIRE,Type.GROUND,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.STEEL,Type.GROUND,Effectiveness.NEUTRAL));
                 log("--Updating Type Effectiveness--");
+                for(TypeRelationship wantedTypeRelation : wantedRelations){
+                    if(!exists(typeEffectivenessTable, wantedTypeRelation)){
+                        typeEffectivenessTable.add(wantedTypeRelation);
+                    }
+                }
+                // (to much overwrites other shit)
+                List<TypeRelationship> toBeTypeEffectivenessTable = new ArrayList<>();
                 for (TypeRelationship relationship : typeEffectivenessTable) {
-                    // Change Ghost 0.5x against Steel to Ghost 1x to Steel
+                    toBeTypeEffectivenessTable.add(relationship);
+                    // Change Psychic 0.5x against Steel to Psychic 1x to Steel
                     if (relationship.attacker == Type.PSYCHIC && relationship.defender == Type.STEEL) {
                         relationship.effectiveness = Effectiveness.NEUTRAL;
-                        log("Replaced: Psychic not very effective vs Steel => Psychic neutral vs Steel");
                     }
                     // Change Dark 0.5x against Steel to Dark 1x to Steel
                     else if (relationship.attacker == Type.DARK && relationship.defender == Type.STEEL) {
+                        relationship.effectiveness = Effectiveness.NEUTRAL;
+                    }
+                    // Change Ghost 0.5x against Steel to Ghost 1x to Steel
+                    else if (relationship.attacker == Type.GHOST && relationship.defender == Type.STEEL) {
+                        relationship.effectiveness = Effectiveness.NEUTRAL;
+                    }
+                    // Change Normal 0.5x against Rock to Normal 1x to Rock !Space!
+                    else if (relationship.attacker == Type.NORMAL && relationship.defender == Type.ROCK) {
+                        relationship.effectiveness = Effectiveness.NEUTRAL;
+                    }
+                    // Change Steel 0.5x against Fire to Steel 1x to Fire !Space!
+                    else if (relationship.attacker == Type.STEEL && relationship.defender == Type.FIRE) {
                         relationship.effectiveness = Effectiveness.NEUTRAL;
                     }
                     // Ice resists water, dragon and ground
@@ -5445,9 +5485,9 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
                         relationship.effectiveness = Effectiveness.DOUBLE;
                     }
                     // Poison resists against water
-                    else if (relationship.attacker == Type.WATER && relationship.defender == Type.POISON) {
-                        relationship.effectiveness = Effectiveness.HALF;
-                    }
+                    //else if (relationship.attacker == Type.WATER && relationship.defender == Type.POISON) {
+                    //    relationship.effectiveness = Effectiveness.HALF;
+                    //} !Space!
                     // Poison neutral against grass
                     else if (relationship.attacker == Type.POISON && relationship.defender == Type.GRASS) {
                         relationship.effectiveness = Effectiveness.NEUTRAL;
@@ -5481,12 +5521,16 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
                         relationship.effectiveness = Effectiveness.HALF;
                     }
                     // Ground resists Steel
-                    else if (relationship.attacker == Type.STEEL && relationship.defender == Type.GROUND) {
-                        relationship.effectiveness = Effectiveness.HALF;
+                    //else if (relationship.attacker == Type.STEEL && relationship.defender == Type.GROUND) {
+                    //    relationship.effectiveness = Effectiveness.HALF;
+                    //} !Space!
+                    if(relationship.effectiveness == Effectiveness.NEUTRAL){
+                        toBeTypeEffectivenessTable.remove(relationship);
                     }
                 }
                 logBlankLine();
-                writeTypeEffectivenessTable(typeEffectivenessTable, battleOverlay, typeEffectivenessTableOffset);
+                writeTypeEffectivenessTable(toBeTypeEffectivenessTable, battleOverlay, typeEffectivenessTableOffset);
+                //readTypeEffectivenessTable(battleOverlay, typeEffectivenessTableOffset).stream().forEach(tpRL -> System.out.println(tpRL.attacker+" "+tpRL.defender+" "+tpRL.effectiveness));
                 writeOverlay(romEntry.getInt("BattleOvlNumber"), battleOverlay);
                 effectivenessUpdated = true;
             }
@@ -5536,6 +5580,7 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
                                              int typeEffectivenessTableOffset) {
         int currentOffset = typeEffectivenessTableOffset;
         for (TypeRelationship relationship : typeEffectivenessTable) {
+            //System.out.println(relationship.attacker+" "+relationship.defender+" "+relationship.effectiveness);
             battleOverlay[currentOffset] = Gen4Constants.typeToByte(relationship.attacker);
             battleOverlay[currentOffset + 1] = Gen4Constants.typeToByte(relationship.defender);
             byte effectivenessInternal = 0;

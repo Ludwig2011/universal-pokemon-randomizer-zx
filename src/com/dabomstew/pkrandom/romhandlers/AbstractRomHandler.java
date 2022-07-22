@@ -3526,37 +3526,37 @@ public abstract class AbstractRomHandler implements RomHandler {
                 while (learnt.contains(mv.number)) {
                     mv = pickList.get(random.nextInt(pickList.size()));
                 }
-                // if damagemove replace with sorted one
-                if(mv.power>0) {
-                    List<Move> damageMoves = new ArrayList<Move>();
-                    for(Move m : pickList) {
-                        if (m.power >0) {
-                            damageMoves.add(m);
-                        }
-                    }
-                    Collections.sort(damageMoves, new Comparator<Move>() {
-
-                        @Override
-                        public int compare(Move m1, Move m2) {
-                            if (m1.power * m1.hitCount < m2.power * m2.hitCount) {
-                                return -1;
-                            } else if (m1.power * m1.hitCount > m2.power * m2.hitCount) {
-                                return 1;
-                            } else {
-                                // stay with the random order
-                                return 0;
-                            }
-                        }
-                    });
-
-                    for (int j = 0; j < damageMoves.size(); j++) {
-                        mv = damageMoves.get(j);
-                        if(!learnt.contains(mv.number)) {
-                            break;
-                        }
-                    }
-                }
-
+//                // if damagemove replace with sorted one
+//                if(mv.power>0) {
+//                    List<Move> damageMoves = new ArrayList<Move>();
+//                    for(Move m : pickList) {
+//                        if (m.power >0) {
+//                            damageMoves.add(m);
+//                        }
+//                    }
+//                    Collections.sort(damageMoves, new Comparator<Move>() {
+//
+//                        @Override
+//                        public int compare(Move m1, Move m2) {
+//                            if (m1.power * m1.hitCount < m2.power * m2.hitCount) {
+//                                return -1;
+//                            } else if (m1.power * m1.hitCount > m2.power * m2.hitCount) {
+//                                return 1;
+//                            } else {
+//                                // stay with the random order
+//                                return 0;
+//                            }
+//                        }
+//                    });
+//
+//                    for (int j = 0; j < damageMoves.size(); j++) {
+//                        mv = damageMoves.get(j);
+//                        if(!learnt.contains(mv.number)) {
+//                            break;
+//                        }
+//                    }
+//                }
+//
                 if (i == lv1index) {
                     lv1AttackingMove = mv.number;
                 } else {
@@ -3566,16 +3566,16 @@ public abstract class AbstractRomHandler implements RomHandler {
 
             }
 
-//            Collections.shuffle(learnt, random);
-//            if (learnt.get(lv1index) != lv1AttackingMove) {
-//                for (int i = 0; i < learnt.size(); i++) {
-//                    if (learnt.get(i) == lv1AttackingMove) {
-//                        learnt.set(i, learnt.get(lv1index));
-//                        learnt.set(lv1index, lv1AttackingMove);
-//                        break;
-//                    }
-//                }
-//            }
+            Collections.shuffle(learnt, random);
+            if (learnt.get(lv1index) != lv1AttackingMove) {
+                for (int i = 0; i < learnt.size(); i++) {
+                    if (learnt.get(i) == lv1AttackingMove) {
+                        learnt.set(i, learnt.get(lv1index));
+                        learnt.set(lv1index, lv1AttackingMove);
+                        break;
+                    }
+                }
+            }
 
             // write all moves for the pokemon
             for (int i = 0; i < learnt.size(); i++) {
