@@ -34,4 +34,11 @@ public class TypeRelationship {
         this.defender = defender;
         this.effectiveness = effectiveness;
     }
+
+    public boolean equalTypes(Type att,Type def){
+        if(att.equals(attacker)&&def.equals(defender)){
+            return true;
+        }
+        return false;
+    }
 }
