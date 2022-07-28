@@ -2850,13 +2850,13 @@ public abstract class AbstractRomHandler implements RomHandler {
                 //low power level
                 switch (random.nextInt(4)) {
                     case 0:
-                        mv.power = random.nextInt(9) * 5 + 30; // 30 ... 70
+                        mv.power = random.nextInt(11) * 5 + 20; // 20 ... 70
                         break;
                     case 1:
-                        mv.power = random.nextInt(5) * 5 + 50; // 50 ... 70
+                        mv.power = random.nextInt(9) * 5 + 30; // 30 ... 70
                         break;
                     case 2:
-                        mv.power = random.nextInt(9) * 5 + 50; // 50 ... 90
+                        mv.power = random.nextInt(11) * 5 + 40; // 40 ... 90
                         break;
                     case 3:
                         mv.power = random.nextInt(9) * 5 + 80; // 80 ... 120
@@ -3526,37 +3526,33 @@ public abstract class AbstractRomHandler implements RomHandler {
                 while (learnt.contains(mv.number)) {
                     mv = pickList.get(random.nextInt(pickList.size()));
                 }
-//                // if damagemove replace with sorted one
-//                if(mv.power>0) {
-//                    List<Move> damageMoves = new ArrayList<Move>();
-//                    for(Move m : pickList) {
-//                        if (m.power >0) {
-//                            damageMoves.add(m);
-//                        }
-//                    }
-//                    Collections.sort(damageMoves, new Comparator<Move>() {
-//
-//                        @Override
-//                        public int compare(Move m1, Move m2) {
-//                            if (m1.power * m1.hitCount < m2.power * m2.hitCount) {
-//                                return -1;
-//                            } else if (m1.power * m1.hitCount > m2.power * m2.hitCount) {
-//                                return 1;
-//                            } else {
-//                                // stay with the random order
-//                                return 0;
-//                            }
-//                        }
-//                    });
-//
-//                    for (int j = 0; j < damageMoves.size(); j++) {
-//                        mv = damageMoves.get(j);
-//                        if(!learnt.contains(mv.number)) {
-//                            break;
-//                        }
-//                    }
-//                }
-//
+                // if damagemove replace with sorted one
+                if(mv.power>1) {
+                    List<Move> damageMoves = new ArrayList<>();
+                    for(Move m : pickList) {
+                        if (m.power >1) {
+                            damageMoves.add(m);
+                        }
+                    }
+                    Collections.sort(damageMoves, (m1, m2) -> {
+                        if (m1.power * m1.hitCount < m2.power * m2.hitCount) {
+                            return -1;
+                        } else if (m1.power * m1.hitCount > m2.power * m2.hitCount) {
+                            return 1;
+                        } else {
+                            // stay with the random order
+                            return 0;
+                        }
+                    });
+
+                    for (int j = 0; j < damageMoves.size(); j++) {
+                        mv = damageMoves.get(j);
+                        if(!learnt.contains(mv.number)) {
+                            break;
+                        }
+                    }
+                }
+
                 if (i == lv1index) {
                     lv1AttackingMove = mv.number;
                 } else {
