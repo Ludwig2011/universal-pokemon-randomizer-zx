@@ -3398,6 +3398,11 @@ public abstract class AbstractRomHandler implements RomHandler {
         Map<Type, List<Move>> validTypeDamagingMoves = new HashMap<>();
         createSetsOfMoves(noBroken, validMoves, validDamagingMoves, validTypeMoves, validTypeDamagingMoves);
 
+        List<Integer> startMoves = new ArrayList<>();
+        startMoves.add(0);
+        startMoves.add(0);
+        startMoves.add(0);
+        startMoves.add(0);
         for (Integer pkmnNum : movesets.keySet()) {
             List<Integer> learnt = new ArrayList<>();
             List<MoveLearnt> moves = movesets.get(pkmnNum);
@@ -3452,7 +3457,8 @@ public abstract class AbstractRomHandler implements RomHandler {
 
             // last lv1 move is 1 before lv1index
             if (lv1index != 0) {
-                lv1index--;
+                //lv1index--;
+                lv1index = 0;
             }
 
             // Force a certain amount of good damaging moves depending on the percentage
@@ -3527,10 +3533,10 @@ public abstract class AbstractRomHandler implements RomHandler {
                     mv = pickList.get(random.nextInt(pickList.size()));
                 }
                 // if damagemove replace with sorted one
-                if(mv.power>1) {
+                if(mv.power>1 || i == 0) {
                     List<Move> damageMoves = new ArrayList<>();
                     for(Move m : pickList) {
-                        if (m.power >1) {
+                        if (m.power >1 && !(startMoves.contains(m.number)&&random.nextInt()<0.75)) {
                                 damageMoves.add(m);
                         }
                     }
@@ -3544,10 +3550,16 @@ public abstract class AbstractRomHandler implements RomHandler {
                             return 0;
                         }
                     });
-
-                    for (int j = 0; j < damageMoves.size(); j++) {
-                        mv = damageMoves.get(j);
-                        if(pkmn.primaryType==mv.type || pkmn.secondaryType==mv.type||random.nextInt()<0.3){
+                    if(i==0){
+                        for(Move dm : damageMoves){
+                            if(dm.type.equals(pkmn.primaryType)||dm.type.equals(pkmn.secondaryType)){
+                                mv = dm;
+                                break;
+                            }
+                        }
+                    }else{
+                        for (int j = 0; j < damageMoves.size(); j++) {
+                            mv = damageMoves.get(j);
                             if(!learnt.contains(mv.number)) {
                                 break;
                             }
@@ -3562,9 +3574,11 @@ public abstract class AbstractRomHandler implements RomHandler {
                 }
                 learnt.add(mv.number);
 
+                if(0<i && i<4 && pkmn.evolutionsTo.size()==0)
+                    startMoves.set(i,mv.number);
             }
 
-            Collections.shuffle(learnt, random);
+/*            Collections.shuffle(learnt, random);
             if (learnt.get(lv1index) != lv1AttackingMove) {
                 for (int i = 0; i < learnt.size(); i++) {
                     if (learnt.get(i) == lv1AttackingMove) {
@@ -3573,7 +3587,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                         break;
                     }
                 }
-            }
+            }*/
 
             // write all moves for the pokemon
             for (int i = 0; i < learnt.size(); i++) {
@@ -3826,6 +3840,7 @@ public abstract class AbstractRomHandler implements RomHandler {
             List<Move> damagingMoves = new ArrayList<>();
             for (int i = 0; i < moves.size(); i++) {
                 if (moves.get(i).level == 0) continue; // Don't reorder evolution move
+                if (i == 0) continue; // Don't reorder starter move
                 Move mv = allMoves.get(moves.get(i).move);
                 if (mv.power > 1) {
                     // considered a damaging move for this purpose
