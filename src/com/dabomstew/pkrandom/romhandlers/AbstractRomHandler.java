@@ -3586,7 +3586,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                 if(mv.power>0) {
                     List<Move> damageMoves = new ArrayList<Move>();
                     for(Move m : pickList) {
-                        if (m.power >0) {
+                        if (m.power >1) {
                             damageMoves.add(m);
                         }
                     }
@@ -3607,8 +3607,10 @@ public abstract class AbstractRomHandler implements RomHandler {
 
                     for (int j = 0; j < damageMoves.size(); j++) {
                         mv = damageMoves.get(j);
-                        if(!learnt.contains(mv.number)) {
-                            break;
+                        if(pkmn.primaryType==mv.type || pkmn.secondaryType==mv.type||random.nextInt()<0.3){
+                            if(!learnt.contains(mv.number)) {
+                                break;
+                            }
                         }
                     }
                 }
