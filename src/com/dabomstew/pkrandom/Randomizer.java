@@ -303,7 +303,7 @@ public class Randomizer {
         }
 
         if (settings.isReorderDamagingMoves()) {
-            romHandler.orderDamagingMovesByDamage();
+            //romHandler.orderDamagingMovesByDamage();
             movesetsChanged = true;
         }
 
@@ -790,12 +790,12 @@ public class Randomizer {
                 try {
                     if (ml.level == 0) {
                         sb.append("Learned upon evolution: ")
-                                .append(moves.get(ml.move).name).append(System.getProperty("line.separator"));
+                                .append(moves.get(ml.move).name).append(" ").append(moves.get(ml.move).type).append(System.getProperty("line.separator"));
                     } else {
                         sb.append("Level ")
                                 .append(String.format("%-2d", ml.level))
                                 .append(": ")
-                                .append(moves.get(ml.move).name).append(System.getProperty("line.separator"));
+                                .append(moves.get(ml.move).name).append(" ").append(moves.get(ml.move).type).append(System.getProperty("line.separator"));
                     }
                 } catch (NullPointerException ex) {
                     sb.append("invalid move at level").append(ml.level);
@@ -805,7 +805,7 @@ public class Randomizer {
             if (eggMove != null && eggMove.size() != 0) {
                 sb.append("Egg Moves:").append(System.getProperty("line.separator"));
                 for (Integer move : eggMove) {
-                    sb.append(" - ").append(moves.get(move).name).append(System.getProperty("line.separator"));
+                    sb.append(" - ").append(moves.get(move).name).append(" ").append(moves.get(move).type).append(System.getProperty("line.separator"));
                 }
             }
 
