@@ -2867,23 +2867,27 @@ public abstract class AbstractRomHandler implements RomHandler {
                 //low power level
                 switch (random.nextInt(4)) {
                     case 0:
-                        mv.power = random.nextInt(9) * 5 + 30; // 30 ... 70
+                        mv.power = random.nextInt(7) * 5 + 40; // 40 ... 70
                         break;
                     case 1:
-                        mv.power = random.nextInt(5) * 5 + 50; // 50 ... 70
+                        mv.power = random.nextInt(7) * 5 + 50; // 50 ... 80
                         break;
                     case 2:
-                        mv.power = random.nextInt(9) * 5 + 50; // 50 ... 90
+                        mv.power = random.nextInt(7) * 5 + 60; // 60 ... 90
                         break;
                     case 3:
-                        mv.power = random.nextInt(9) * 5 + 80; // 80 ... 120
+                        mv.power = random.nextInt(21) * 5 + 20; // 20 ... 120
                         if (random.nextInt(10) == 0) {
                             mv.power += random.nextInt(6) * 5 + 5; // 10% chance of + 5 ... 30
                         }
                         break;
-
                 }
 
+                if(mv.isChargeMove)
+                    mv.power = (int) Math.round(mv.power*1.5);
+
+                if(mv.isRechargeMove)
+                    mv.power = mv.power*2;
 
                 if (mv.hitCount != 1) {
                     // Divide randomized power by average hit count, round to
@@ -3460,6 +3464,7 @@ public abstract class AbstractRomHandler implements RomHandler {
         startMoves.add(0);
         startMoves.add(0);
         for (Integer pkmnNum : movesets.keySet()) {
+            System.out.println("PN: "+pkmnNum);
             List<Integer> learnt = new ArrayList<>();
             List<MoveLearnt> moves = movesets.get(pkmnNum);
             int lv1AttackingMove = 0;
@@ -3513,8 +3518,7 @@ public abstract class AbstractRomHandler implements RomHandler {
 
             // last lv1 move is 1 before lv1index
             if (lv1index != 0) {
-                //lv1index--;
-                lv1index = 0;
+                lv1index--;
             }
 
             // Force a certain amount of good damaging moves depending on the percentage
@@ -3596,10 +3600,19 @@ public abstract class AbstractRomHandler implements RomHandler {
                                 damageMoves.add(m);
                         }
                     }
-                    Collections.sort(damageMoves, new Comparator<Move>() {
-
-                        @Override
-                        public int compare(Move m1, Move m2) {
+                    damageMoves.sort((m1, m2) -> {
+                        if (m1.power * m1.hitCount < m2.power * m2.hitCount) {
+                            return -1;
+                        } else if (m1.power * m1.hitCount > m2.power * m2.hitCount) {
+                            return 1;
+                        } else {
+                            // stay with the random order
+                            return 0;
+                        }
+                    });
+                    if(i==forceStartingMoveCount-1){
+                        List<Move> sortedValidDamagingMoves = validDamagingMoves;
+                        sortedValidDamagingMoves.sort((m1, m2) -> {
                             if (m1.power * m1.hitCount < m2.power * m2.hitCount) {
                                 return -1;
                             } else if (m1.power * m1.hitCount > m2.power * m2.hitCount) {
@@ -3608,14 +3621,18 @@ public abstract class AbstractRomHandler implements RomHandler {
                                 // stay with the random order
                                 return 0;
                             }
-                        }
-                    });
-                    if(i==0){
-                        for(Move dm : damageMoves){
+                        });
+                        Move oldMove = mv;
+                        for(Move dm : sortedValidDamagingMoves){
+                            if(learnt.contains(mv.number))
+                                continue;
                             if(dm.type.equals(pkmn.primaryType)||dm.type.equals(pkmn.secondaryType)){
                                 mv = dm;
                                 break;
                             }
+                        }
+                        if (oldMove.number == mv.number){
+                            System.out.println("old");
                         }
                     }else{
                         for (int j = 0; j < damageMoves.size(); j++) {
@@ -3627,14 +3644,14 @@ public abstract class AbstractRomHandler implements RomHandler {
                     }
                 }
 
-                if (i == lv1index) {
+                if (i == forceStartingMoveCount-1) {
                     lv1AttackingMove = mv.number;
                 } else {
                     goodDamagingLeft--;
                 }
                 learnt.add(mv.number);
 
-                if(0<i && i<4 && pkmn.evolutionsTo.size()==0)
+                if(forceStartingMoveCount-1!=i && i<4 && pkmn.evolutionsTo.size()==0)
                     startMoves.set(i,mv.number);
             }
 
@@ -3652,8 +3669,10 @@ public abstract class AbstractRomHandler implements RomHandler {
             // write all moves for the pokemon
             for (int i = 0; i < learnt.size(); i++) {
                 moves.get(i).move = learnt.get(i);
-                if (i == lv1index) {
+                if (i == forceStartingMoveCount-1) {
                     // just in case, set this to lv1
+                    System.out.println(i);
+                    System.out.println(forceStartingMoveCount);
                     moves.get(i).level = 1;
                 }
             }
