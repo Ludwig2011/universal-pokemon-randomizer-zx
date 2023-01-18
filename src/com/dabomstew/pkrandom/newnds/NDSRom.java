@@ -9,9 +9,10 @@ import com.dabomstew.pkrandom.SysConstants;
 import com.dabomstew.pkrandom.FileFunctions;
 import com.dabomstew.pkrandom.RomFunctions;
 
-import com.dabomstew.pkrandom.exceptions.CannotWriteToLocationException;
 import com.dabomstew.pkrandom.exceptions.RandomizerIOException;
 import cuecompressors.BLZCoder;
+
+import static com.dabomstew.pkrandom.romhandlers.Gen4RomHandler.bytesToHex;
 
 /*----------------------------------------------------------------------------*/
 /*--  NDSRom.java - base class for opening/saving ROMs                      --*/
@@ -469,6 +470,14 @@ public class NDSRom {
         } else {
             return null;
         }
+    }
+
+    public byte[] getOverlayByHex(String hex) throws IOException{
+        for(int i = 0; i<arm9overlays.length;i++){
+            if(!(arm9overlays[i].getContents() == null) && bytesToHex(arm9overlays[i].getContents()).contains(hex))
+                return arm9overlays[i].getContents();
+        }
+        return null;
     }
 
     public int getOverlayAddress(int number) {

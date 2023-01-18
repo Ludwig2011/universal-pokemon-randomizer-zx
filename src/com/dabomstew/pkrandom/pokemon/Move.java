@@ -60,6 +60,7 @@ public class Move {
     public int priority;
     public boolean makesContact;
     public boolean isChargeMove;
+    public boolean isPositiveChargeMove = false;
     public boolean isRechargeMove;
     public boolean isPunchMove;
     public boolean isSoundMove;
