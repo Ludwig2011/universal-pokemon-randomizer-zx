@@ -408,7 +408,9 @@ public abstract class AbstractRomHandler implements RomHandler {
     @Override
     public Type randomType() {
         Type t = Type.randomType(this.random);
-        while (!typeInGame(t)) {
+/*        if(t.equals(Type.NORMAL))
+            t = Type.randomType(this.random);*/
+        while (t.equals(Type.NORMAL)||!typeInGame(t)) {
             t = Type.randomType(this.random);
         }
         return t;
@@ -445,6 +447,12 @@ public abstract class AbstractRomHandler implements RomHandler {
                         }
                     }
                 }
+
+/*                if(pk.primaryType.equals(Type.NORMAL))
+                    pk.secondaryType = Type.GHOST;
+                if(!(pk.secondaryType == null) && pk.secondaryType.equals(Type.NORMAL))
+                    pk.primaryType = Type.GHOST;*/
+
                 if(pk.secondaryType == null){
                     pk.name = pk.name.substring(0, Math.min(3, pk.name.length())).concat(" " + pk.primaryType.toString().substring(0, 3));
                 }else {
@@ -2821,6 +2829,7 @@ public abstract class AbstractRomHandler implements RomHandler {
     @Override
     public void randomizeMovePowers() {
         List<Move> moves = this.getMoves();
+        List<Move> track = new ArrayList<>();
         for (Move mv : moves) {
             if (mv != null && mv.internalId != Moves.struggle && mv.power >= 10) {
                 //if (random.nextInt(3) != 2) {
@@ -2830,7 +2839,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                 //    // "Extreme" move
                 //    mv.power = random.nextInt(27) * 5 + 20; // 20 ... 150
                 //}
-//High power level
+                //High power level
                 //switch (random.nextInt(3)) {
                 //case 0:
                 //    mv.power = random.nextInt(9) * 5 + 30; // 30 ... 70
@@ -2859,19 +2868,27 @@ public abstract class AbstractRomHandler implements RomHandler {
                         mv.power = random.nextInt(7) * 5 + 60; // 60 ... 90
                         break;
                     case 3:
-                        mv.power = random.nextInt(21) * 5 + 20; // 20 ... 120
-                        if (random.nextInt(10) == 0) {
-                            mv.power += random.nextInt(6) * 5 + 5; // 10% chance of + 5 ... 30
-                        }
+                        mv.power = random.nextInt(15) * 5 + 40; // 40 ... 110
                         break;
                 }
-
-                if(mv.isChargeMove)
-                    mv.power = (int) Math.round(mv.power*1.5);
-
-                if(mv.isRechargeMove)
-                    mv.power = mv.power*2;
-
+                track.add(mv);
+                if(mv.isChargeMove && !mv.isPositiveChargeMove) {
+                    mv.power = roundToNearestFive(Math.round(mv.power * 1.5));
+                }else if(mv.isRechargeMove) {
+                    mv.power = mv.power * 2;
+                }else if(mv.statChanges[0].stages <0) {
+                    mv.power = roundToNearestFive(mv.power * (1 + (0.2 * (-mv.statChanges[0].stages))));
+                }else if(mv.recoilPercent > 20) {
+                    mv.power = roundToNearestFive(mv.power * ((mv.recoilPercent + 100) / 100));
+                }else if(track.stream().anyMatch(trackMove -> trackMove.type.equals(mv.type))){
+                    if(track.stream().noneMatch(trackMove -> trackMove.type.equals(mv.type)&&trackMove.power<45)){
+                        mv.power = random.nextInt(3) * 5 + 30;
+                    }else if(track.stream().noneMatch(trackMove -> trackMove.type.equals(mv.type)&&trackMove.power>75))
+                        mv.power = random.nextInt(5) * 5 + 80;
+                }
+                if (mv.name.contains("Beat Up")){
+                    mv.power = random.nextInt(5) * 5 + 10; // 10 ... 30
+                }
                 if (mv.hitCount != 1) {
                     // Divide randomized power by average hit count, round to
                     // nearest 5
@@ -2882,6 +2899,10 @@ public abstract class AbstractRomHandler implements RomHandler {
                 }
             }
         }
+    }
+
+    public static int roundToNearestFive(double d) {
+        return (int) Math.round(d/5) * 5;
     }
 
     @Override
@@ -3408,7 +3429,6 @@ public abstract class AbstractRomHandler implements RomHandler {
         startMoves.add(0);
         startMoves.add(0);
         for (Integer pkmnNum : movesets.keySet()) {
-            System.out.println("PN: "+pkmnNum);
             List<Integer> learnt = new ArrayList<>();
             List<MoveLearnt> moves = movesets.get(pkmnNum);
             int lv1AttackingMove = 0;
@@ -3576,7 +3596,6 @@ public abstract class AbstractRomHandler implements RomHandler {
                             }
                         }
                         if (oldMove.number == mv.number){
-                            System.out.println("old");
                         }
                     }else{
                         for (int j = 0; j < damageMoves.size(); j++) {
@@ -3615,8 +3634,6 @@ public abstract class AbstractRomHandler implements RomHandler {
                 moves.get(i).move = learnt.get(i);
                 if (i == forceStartingMoveCount-1) {
                     // just in case, set this to lv1
-                    System.out.println(i);
-                    System.out.println(forceStartingMoveCount);
                     moves.get(i).level = 1;
                 }
             }
