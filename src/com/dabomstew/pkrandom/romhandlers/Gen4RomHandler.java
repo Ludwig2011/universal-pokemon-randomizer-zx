@@ -28,6 +28,7 @@ import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -970,12 +971,15 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
                 break;
 
             case Gen4Constants.skullBashEffect:
-            case Gen4Constants.solarbeamEffect:
             case Gen4Constants.flyEffect:
             case Gen4Constants.diveEffect:
             case Gen4Constants.digEffect:
             case Gen4Constants.bounceEffect:
             case Gen4Constants.shadowForceEffect:
+                move.isPositiveChargeMove = true;
+                move.isChargeMove = true;
+                break;
+            case Gen4Constants.solarbeamEffect:
                 move.isChargeMove = true;
                 break;
 
@@ -5409,7 +5413,25 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
         return typeEffectivenessTable.stream().anyMatch(tp -> tp.equalTypes(typeRelationship.attacker,typeRelationship.defender));
     }
 
+    private static final byte[] HEX_ARRAY = "0123456789ABCDEF".getBytes(StandardCharsets.US_ASCII);
+    public static String bytesToHex(byte[] bytes) {
+        byte[] hexChars = new byte[bytes.length * 2];
+        for (int j = 0; j < bytes.length; j++) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
+        }
+        return new String(hexChars, StandardCharsets.UTF_8);
+    }
+
+    private void writeInfiniteTMs(){//offset = 0x0008A5E7
+        int tmUseFunctionOffset = find(arm9, Gen4Constants.infiniteTMPrefix);
+        System.out.println(tmUseFunctionOffset);
+        arm9[tmUseFunctionOffset+4] = -32;
+    }
+
     private void updateTypeEffectiveness() {
+        writeInfiniteTMs();
         try {
             byte[] battleOverlay = readOverlay(romEntry.getInt("BattleOvlNumber"));
             int typeEffectivenessTableOffset = find(battleOverlay, Gen4Constants.typeEffectivenessTableLocator);
@@ -5456,6 +5478,18 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
                     }
                     // Change Normal 0.5x against Rock to Normal 1x to Rock !Space!
                     else if (relationship.attacker == Type.NORMAL && relationship.defender == Type.ROCK) {
+                        relationship.effectiveness = Effectiveness.NEUTRAL;
+                    }
+                    // Change Normal 0.5x against Steel to Normal 1x to Steel !Space!
+                    else if (relationship.attacker == Type.NORMAL && relationship.defender == Type.STEEL) {
+                        relationship.effectiveness = Effectiveness.NEUTRAL;
+                    }
+                    // Change Normal 0.5x against Ghost to Normal 1x to Ghost !Space!
+                    else if (relationship.attacker == Type.NORMAL && relationship.defender == Type.GHOST) {
+                        relationship.effectiveness = Effectiveness.NEUTRAL;
+                    }
+                    // Change Ghost 0.5x against Normal to Ghost 1x to Normal !Space!
+                    else if (relationship.attacker == Type.GHOST && relationship.defender == Type.NORMAL) {
                         relationship.effectiveness = Effectiveness.NEUTRAL;
                     }
                     // Change Steel 0.5x against Fire to Steel 1x to Fire !Space!

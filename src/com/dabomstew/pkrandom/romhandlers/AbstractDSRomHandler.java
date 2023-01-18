@@ -243,6 +243,10 @@ public abstract class AbstractDSRomHandler extends AbstractRomHandler {
         return baseRom.getOverlay(number);
     }
 
+    protected byte[] searchOverlayByHex(String hex) throws IOException{
+        return baseRom.getOverlayByHex(hex);
+    }
+
     protected void writeOverlay(int number, byte[] data) throws IOException {
         baseRom.writeOverlay(number, data);
     }

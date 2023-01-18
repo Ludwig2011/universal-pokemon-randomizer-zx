@@ -119,6 +119,11 @@ public class Randomizer {
             logMoveUpdates(log);
         }
 
+        if (settings.isRandomizeMoveTypes()) {
+            romHandler.randomizeMoveTypes();
+            movesChanged = true;
+        }
+
         if (settings.isRandomizeMovePowers()) {
             romHandler.randomizeMovePowers();
             movesChanged = true;
@@ -131,11 +136,6 @@ public class Randomizer {
 
         if (settings.isRandomizeMovePPs()) {
             romHandler.randomizeMovePPs();
-            movesChanged = true;
-        }
-
-        if (settings.isRandomizeMoveTypes()) {
-            romHandler.randomizeMoveTypes();
             movesChanged = true;
         }
 
