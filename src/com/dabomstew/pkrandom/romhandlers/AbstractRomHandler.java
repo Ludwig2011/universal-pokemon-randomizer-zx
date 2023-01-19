@@ -3461,6 +3461,10 @@ public abstract class AbstractRomHandler implements RomHandler {
 
     @Override
     public void randomizeMovesLearnt(Settings settings) {
+        //
+        // 1.Fuck with less OG shit???
+        // 2. Check after all moves are generatet for one MON !
+        //
         boolean typeThemed = settings.getMovesetsMod() == Settings.MovesetsMod.RANDOM_PREFER_SAME_TYPE;
         boolean noBroken = settings.isBlockBrokenMovesetMoves();
         boolean forceStartingMoves = supportsFourStartingMoves() && settings.isStartWithGuaranteedMoves();
@@ -3566,10 +3570,10 @@ public abstract class AbstractRomHandler implements RomHandler {
                         }
                         // else random
                     } else if (pkmn.secondaryType != null) {
-                        // Primary/Secondary: 20% primary, 20% secondary, 60% random
-                        if (picked < 0.2) {
+                        // Primary/Secondary: 25% primary, 25% secondary, 50% random
+                        if (picked < 0.25) {
                             typeOfMove = pkmn.primaryType;
-                        } else if (picked < 0.4) {
+                        } else if (picked < 0.5) {
                             typeOfMove = pkmn.secondaryType;
                         }
                         // else random
@@ -3611,6 +3615,10 @@ public abstract class AbstractRomHandler implements RomHandler {
                 Move mv = pickList.get(random.nextInt(pickList.size()));
                 while (learnt.contains(mv.number)) {
                     mv = pickList.get(random.nextInt(pickList.size()));
+                }
+                System.out.println(pkmn.name + ":");
+                for (Move move:pickList) {
+                    System.out.println(move.name);
                 }
                 // if damagemove replace with sorted one
                 if(mv.power>1 || i == 0) {
