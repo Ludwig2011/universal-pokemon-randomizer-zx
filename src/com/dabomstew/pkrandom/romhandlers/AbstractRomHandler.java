@@ -3616,7 +3616,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                 while (learnt.contains(mv.number)) {
                     mv = pickList.get(random.nextInt(pickList.size()));
                 }
-                System.out.println(pkmn.name + ":");
+                System.out.println(pkmn.name + ": ");
                 for (Move move:pickList) {
                     System.out.println(move.name);
                 }
