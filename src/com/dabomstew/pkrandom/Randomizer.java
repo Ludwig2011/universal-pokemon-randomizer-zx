@@ -303,7 +303,7 @@ public class Randomizer {
         }
 
         if (settings.isReorderDamagingMoves()) {
-            //romHandler.orderDamagingMovesByDamage();
+            romHandler.orderDamagingMovesByDamage();
             movesetsChanged = true;
         }
 

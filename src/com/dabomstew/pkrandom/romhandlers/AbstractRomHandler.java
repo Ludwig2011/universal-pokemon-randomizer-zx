@@ -1821,7 +1821,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                 // This is the first rival in Yellow. His Pokemon is used to determine the non-player
                 // starter, so we can't change it here. Just skip it.
                 continue;
-            } else if(t.tag.endsWith("_LEADER")) {
+            } else if(t.tag != null && t.tag.endsWith("_LEADER")) {
                 while (t.pokemon.size() < 6) {
                     t.pokemon.add(t.pokemon.get(t.pokemon.size() - 1).copy());
                 }
@@ -2888,6 +2888,13 @@ public abstract class AbstractRomHandler implements RomHandler {
                         mv.power = random.nextInt(15) * 5 + 40; // 40 ... 110
                         break;
                 }
+                if(mv.name.equalsIgnoreCase("fly")||
+                        mv.name.equalsIgnoreCase("cut")||
+                        mv.name.equalsIgnoreCase("surf")||
+                        mv.name.equalsIgnoreCase("rock smash")||
+                        mv.name.equalsIgnoreCase("waterfall")||
+                        mv.name.equalsIgnoreCase("rock climb"))
+                mv.power = random.nextInt(3) * 5 + 80; // 80 ... 90
                 track.add(mv);
                 if(mv.isChargeMove && !mv.isPositiveChargeMove) {
                     mv.power = roundToNearestFive(Math.round(mv.power * 1.5));
@@ -2899,7 +2906,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                     mv.power = roundToNearestFive(mv.power * ((mv.recoilPercent + 100) / 100));
                 }else if(track.stream().anyMatch(trackMove -> trackMove.type.equals(mv.type))){
                     if(track.stream().noneMatch(trackMove -> trackMove.type.equals(mv.type)&&trackMove.power<45)){
-                        mv.power = random.nextInt(3) * 5 + 30;
+                        mv.power = random.nextInt(3) * 5 + 40;
                     }else if(track.stream().noneMatch(trackMove -> trackMove.type.equals(mv.type)&&trackMove.power>75))
                         mv.power = random.nextInt(5) * 5 + 80;
                 }
@@ -3483,12 +3490,11 @@ public abstract class AbstractRomHandler implements RomHandler {
         Map<Type, List<Move>> validTypeDamagingMoves = new HashMap<>();
         createSetsOfMoves(noBroken, validMoves, validDamagingMoves, validTypeMoves, validTypeDamagingMoves);
 
-        List<Integer> startMoves = new ArrayList<>();
-        startMoves.add(0);
-        startMoves.add(0);
-        startMoves.add(0);
-        startMoves.add(0);
+        List<Move> track =  new ArrayList<>();
+        int done = 0;
+
         for (Integer pkmnNum : movesets.keySet()) {
+            done = 0;
             List<Integer> learnt = new ArrayList<>();
             List<MoveLearnt> moves = movesets.get(pkmnNum);
             int lv1AttackingMove = 0;
@@ -3616,70 +3622,39 @@ public abstract class AbstractRomHandler implements RomHandler {
                 while (learnt.contains(mv.number)) {
                     mv = pickList.get(random.nextInt(pickList.size()));
                 }
-                System.out.println(pkmn.name + ": ");
-                for (Move move:pickList) {
-                    System.out.println(move.name);
-                }
                 // if damagemove replace with sorted one
-                if(mv.power>1 || i == 0) {
-                    List<Move> damageMoves = new ArrayList<>();
-                    for(Move m : pickList) {
-                        if (m.power >1 && !(startMoves.contains(m.number)&&random.nextInt()<0.75)) {
-                                damageMoves.add(m);
-                        }
-                    }
-                    damageMoves.sort((m1, m2) -> {
-                        if (m1.power * m1.hitCount < m2.power * m2.hitCount) {
-                            return -1;
-                        } else if (m1.power * m1.hitCount > m2.power * m2.hitCount) {
-                            return 1;
-                        } else {
-                            // stay with the random order
-                            return 0;
-                        }
-                    });
-                    if(i==forceStartingMoveCount-1){
-                        List<Move> sortedValidDamagingMoves = validDamagingMoves;
-                        sortedValidDamagingMoves.sort((m1, m2) -> {
-                            if (m1.power * m1.hitCount < m2.power * m2.hitCount) {
-                                return -1;
-                            } else if (m1.power * m1.hitCount > m2.power * m2.hitCount) {
-                                return 1;
-                            } else {
-                                // stay with the random order
-                                return 0;
-                            }
-                        });
-                        Move oldMove = mv;
-                        for(Move dm : sortedValidDamagingMoves){
-                            if(learnt.contains(mv.number))
-                                continue;
-                            if(dm.type.equals(pkmn.primaryType)||dm.type.equals(pkmn.secondaryType)){
-                                mv = dm;
-                                break;
-                            }
-                        }
-                        if (oldMove.number == mv.number){
-                        }
-                    }else{
-                        for (int j = 0; j < damageMoves.size(); j++) {
-                            mv = damageMoves.get(j);
-                            if(!learnt.contains(mv.number)) {
-                                break;
-                            }
-                        }
-                    }
-                }
+//                if(mv.power>1) {
+//                    List<Move> damageMoves = new ArrayList<>();
+//                    for(Move m : pickList) {
+//                        if (m.power >1) {
+//                                damageMoves.add(m);
+//                        }
+//                    }
+//                    damageMoves.sort((m1, m2) -> {
+//                        if (m1.power * m1.hitCount < m2.power * m2.hitCount) {
+//                            return -1;
+//                        } else if (m1.power * m1.hitCount > m2.power * m2.hitCount) {
+//                            return 1;
+//                        } else {
+//                            // stay with the random order
+//                            return 0;
+//                        }
+//                    });
+//                    for (int j = 0; j < damageMoves.size(); j++) {
+//                        mv = damageMoves.get(j);
+//                        if(!learnt.contains(mv.number)) {
+//                            break;
+//                        }
+//                    }
+//                }
 
                 if (i == forceStartingMoveCount-1) {
                     lv1AttackingMove = mv.number;
                 } else {
                     goodDamagingLeft--;
                 }
+                track.add(mv);
                 learnt.add(mv.number);
-
-                if(forceStartingMoveCount-1!=i && i<4 && pkmn.evolutionsTo.size()==0)
-                    startMoves.set(i,mv.number);
             }
 
 //            Collections.shuffle(learnt, random);
@@ -3693,6 +3668,19 @@ public abstract class AbstractRomHandler implements RomHandler {
 //                }
 //            }
 
+            Move weakestTypeMove = track.stream().filter(m -> m.power > 1 && (m.type == pkmn.primaryType || m.type == pkmn.primaryType)).findFirst().get();
+            for(Move move:track){
+                if((move.type == pkmn.primaryType || move.type == pkmn.primaryType) && move.power > 1 && weakestTypeMove.power * weakestTypeMove.hitCount > move.power * move.hitCount)
+                weakestTypeMove = move;
+            }
+            int oldMoveNumber;
+            int weakestTypeMoveIndex;
+            if(learnt.contains(weakestTypeMove.number)){
+                weakestTypeMoveIndex = learnt.indexOf(weakestTypeMove.number);
+                oldMoveNumber = learnt.get(0);
+                learnt.set(weakestTypeMoveIndex,oldMoveNumber);
+            }
+            learnt.set(0,weakestTypeMove.number);
             // write all moves for the pokemon
             for (int i = 0; i < learnt.size(); i++) {
                 moves.get(i).move = learnt.get(i);
