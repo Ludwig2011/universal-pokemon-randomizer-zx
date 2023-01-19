@@ -795,7 +795,7 @@ public class Randomizer {
                         sb.append("Level ")
                                 .append(String.format("%-2d", ml.level))
                                 .append(": ")
-                                .append(moves.get(ml.move).name).append(" ").append(moves.get(ml.move).type).append(System.getProperty("line.separator"));
+                                .append(moves.get(ml.move).name).append(" ").append(moves.get(ml.move).type).append(" ").append(moves.get(ml.move).power).append(System.getProperty("line.separator"));
                     }
                 } catch (NullPointerException ex) {
                     sb.append("invalid move at level").append(ml.level);
