@@ -2901,7 +2901,10 @@ public abstract class AbstractRomHandler implements RomHandler {
                 }else if(mv.isRechargeMove) {
                     mv.power = mv.power * 2;
                 }else if(mv.statChanges[0].stages <0) {
-                    mv.power = roundToNearestFive(mv.power * (1 + (0.2 * (-mv.statChanges[0].stages))));
+                    if(mv.statChangeMoveType == StatChangeMoveType.DAMAGE_USER)
+                        mv.power = roundToNearestFive(mv.power * (1 + (0.2 * (-mv.statChanges[0].stages))));
+                    if(mv.statChangeMoveType == StatChangeMoveType.DAMAGE_TARGET)
+                        mv.power = roundToNearestFive(mv.power * (1 + (0.2 * (mv.statChanges[0].stages))));
                 }else if(mv.recoilPercent > 20) {
                     mv.power = roundToNearestFive(mv.power * ((mv.recoilPercent + 100) / 100));
                 }else if(track.stream().anyMatch(trackMove -> trackMove.type.equals(mv.type))){
@@ -3468,10 +3471,6 @@ public abstract class AbstractRomHandler implements RomHandler {
 
     @Override
     public void randomizeMovesLearnt(Settings settings) {
-        //
-        // 1.Fuck with less OG shit???
-        // 2. Check after all moves are generatet for one MON !
-        //
         boolean typeThemed = settings.getMovesetsMod() == Settings.MovesetsMod.RANDOM_PREFER_SAME_TYPE;
         boolean noBroken = settings.isBlockBrokenMovesetMoves();
         boolean forceStartingMoves = supportsFourStartingMoves() && settings.isStartWithGuaranteedMoves();
@@ -7577,7 +7576,7 @@ public abstract class AbstractRomHandler implements RomHandler {
     @Override
     public List<Integer> getGameBreakingMoves() {
         // Sonicboom & Dragon Rage
-        return Arrays.asList(49, 82);
+        return Arrays.asList(49, 82, 12, 32, 90, 329);
     }
 
     @Override
