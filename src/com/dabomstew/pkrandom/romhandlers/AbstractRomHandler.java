@@ -2888,13 +2888,6 @@ public abstract class AbstractRomHandler implements RomHandler {
                         mv.power = random.nextInt(15) * 5 + 40; // 40 ... 110
                         break;
                 }
-                if(mv.name.equalsIgnoreCase("fly")||
-                        mv.name.equalsIgnoreCase("cut")||
-                        mv.name.equalsIgnoreCase("surf")||
-                        mv.name.equalsIgnoreCase("rock smash")||
-                        mv.name.equalsIgnoreCase("waterfall")||
-                        mv.name.equalsIgnoreCase("rock climb"))
-                mv.power = random.nextInt(3) * 5 + 80; // 80 ... 90
                 track.add(mv);
                 if(mv.isChargeMove && !mv.isPositiveChargeMove) {
                     mv.power = roundToNearestFive(Math.round(mv.power * 1.5));
@@ -2913,6 +2906,13 @@ public abstract class AbstractRomHandler implements RomHandler {
                     }else if(track.stream().noneMatch(trackMove -> trackMove.type.equals(mv.type)&&trackMove.power>75))
                         mv.power = random.nextInt(5) * 5 + 80;
                 }
+                if(mv.name.equalsIgnoreCase("fly")||
+                        mv.name.equalsIgnoreCase("cut")||
+                        mv.name.equalsIgnoreCase("surf")||
+                        mv.name.equalsIgnoreCase("rock smash")||
+                        mv.name.equalsIgnoreCase("waterfall")||
+                        mv.name.equalsIgnoreCase("rock climb"))
+                    mv.power = random.nextInt(3) * 7 + 70; // 70 ... 90
                 if (mv.name.contains("Beat Up")){
                     mv.power = random.nextInt(5) * 5 + 10; // 10 ... 30
                 }
