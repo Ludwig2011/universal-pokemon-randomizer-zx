@@ -2890,14 +2890,12 @@ public abstract class AbstractRomHandler implements RomHandler {
                 }
                 track.add(mv);
                 if(mv.isChargeMove && !mv.isPositiveChargeMove) {
-                    mv.power = roundToNearestFive(Math.round(mv.power * 1.5));
-                }else if(mv.isRechargeMove) {
-                    mv.power = mv.power * 2;
+                    mv.power = roundToNearestFive(Math.round(mv.power * 2));
+                }else if(mv.isRechargeMove || mv.name.equalsIgnoreCase("skull bash")) {
+                    mv.power = roundToNearestFive(mv.power * 1.5);
                 }else if(mv.statChanges[0].stages <0) {
                     if(mv.statChangeMoveType == StatChangeMoveType.DAMAGE_USER)
                         mv.power = roundToNearestFive(mv.power * (1 + (0.2 * (-mv.statChanges[0].stages))));
-                    if(mv.statChangeMoveType == StatChangeMoveType.DAMAGE_TARGET)
-                        mv.power = roundToNearestFive(mv.power * (1 + (0.2 * (mv.statChanges[0].stages))));
                 }else if(mv.recoilPercent > 20) {
                     mv.power = roundToNearestFive(mv.power * ((mv.recoilPercent + 100) / 100));
                 }else if(track.stream().anyMatch(trackMove -> trackMove.type.equals(mv.type))){
