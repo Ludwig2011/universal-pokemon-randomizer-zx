@@ -2888,6 +2888,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                         mv.power = random.nextInt(15) * 5 + 40; // 40 ... 110
                         break;
                 }
+                mv.unbuffedPower = mv.power;
                 track.add(mv);
                 if(mv.isChargeMove && !mv.isPositiveChargeMove) {
                     mv.power = roundToNearestFive(Math.round(mv.power * 2));
@@ -2909,8 +2910,10 @@ public abstract class AbstractRomHandler implements RomHandler {
                         mv.name.equalsIgnoreCase("surf")||
                         mv.name.equalsIgnoreCase("rock smash")||
                         mv.name.equalsIgnoreCase("waterfall")||
-                        mv.name.equalsIgnoreCase("rock climb"))
+                        mv.name.equalsIgnoreCase("rock climb")){
                     mv.power = random.nextInt(3) * 7 + 70; // 70 ... 90
+                    mv.unbuffedPower = mv.power;
+                    }
                 if (mv.name.contains("Beat Up")){
                     mv.power = random.nextInt(5) * 5 + 10; // 10 ... 30
                 }
@@ -2921,6 +2924,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                     if (mv.power <= 25) {
                         mv.power = 25;
                     }
+                    mv.unbuffedPower = mv.power;
                 }
             }
         }
@@ -3667,7 +3671,7 @@ public abstract class AbstractRomHandler implements RomHandler {
 
             Move weakestTypeMove = track.stream().filter(m -> m.power > 1 && (m.type == pkmn.primaryType || m.type == pkmn.primaryType)).findFirst().get();
             for(Move move:track){
-                if((move.type == pkmn.primaryType || move.type == pkmn.primaryType) && move.power > 1 && weakestTypeMove.power * weakestTypeMove.hitCount > move.power * move.hitCount)
+                if((move.type == pkmn.primaryType || move.type == pkmn.primaryType) && move.power > 1 && weakestTypeMove.unbuffedPower * weakestTypeMove.hitCount > move.unbuffedPower * move.hitCount)
                 weakestTypeMove = move;
             }
             int oldMoveNumber;
@@ -3942,7 +3946,7 @@ public abstract class AbstractRomHandler implements RomHandler {
             Collections.shuffle(damagingMoves, random);
 
             // Sort the damaging moves by power
-            damagingMoves.sort(Comparator.comparingDouble(m -> m.power * m.hitCount));
+            damagingMoves.sort(Comparator.comparingDouble(m -> m.unbuffedPower * m.hitCount));
 
             // Reassign damaging moves in the ordered positions
             for (int i = 0; i < damagingMoves.size(); i++) {
@@ -5334,7 +5338,7 @@ public abstract class AbstractRomHandler implements RomHandler {
     }
 
     @Override
-    public void randomizeFieldItems(Settings settings) {
+    public void randomizeFieldItems(Settings settings) { // TODO remove TM from options once set
         boolean banBadItems = settings.isBanBadRandomFieldItems();
         boolean distributeItemsControl = settings.getFieldItemsMod() == Settings.FieldItemsMod.RANDOM_EVEN;
         boolean uniqueItems = !settings.isBalanceShopPrices();

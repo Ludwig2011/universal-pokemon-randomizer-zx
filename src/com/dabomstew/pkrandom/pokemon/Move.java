@@ -45,6 +45,7 @@ public class Move {
     public int internalId;
     public int power;
     public int pp;
+    public int unbuffedPower;
     public double hitratio;
     public Type type;
     public MoveCategory category;
