@@ -2888,8 +2888,15 @@ public abstract class AbstractRomHandler implements RomHandler {
                         mv.power = random.nextInt(15) * 5 + 40; // 40 ... 110
                         break;
                 }
-                mv.unbuffedPower = mv.power;
                 track.add(mv);
+                if(track.stream().anyMatch(trackMove -> trackMove.type.equals(mv.type))){
+                    if(track.stream().noneMatch(trackMove -> trackMove.type.equals(mv.type)&&trackMove.power<45)){
+                        mv.power = random.nextInt(3) * 5 + 40;
+                    }else if(track.stream().noneMatch(trackMove -> trackMove.type.equals(mv.type)&&trackMove.power>75)){
+                        mv.power = random.nextInt(5) * 5 + 80;
+                    }
+                }
+                mv.unbuffedPower = mv.power;
                 if(mv.isChargeMove && !mv.isPositiveChargeMove) {
                     mv.power = roundToNearestFive(Math.round(mv.power * 2));
                 }else if(mv.isRechargeMove || mv.name.equalsIgnoreCase("skull bash")) {
@@ -2899,19 +2906,15 @@ public abstract class AbstractRomHandler implements RomHandler {
                         mv.power = roundToNearestFive(mv.power * (1 + (0.2 * (-mv.statChanges[0].stages))));
                 }else if(mv.recoilPercent > 20) {
                     mv.power = roundToNearestFive(mv.power * ((mv.recoilPercent + 100) / 100));
-                }else if(track.stream().anyMatch(trackMove -> trackMove.type.equals(mv.type))){
-                    if(track.stream().noneMatch(trackMove -> trackMove.type.equals(mv.type)&&trackMove.power<45)){
-                        mv.power = random.nextInt(3) * 5 + 40;
-                    }else if(track.stream().noneMatch(trackMove -> trackMove.type.equals(mv.type)&&trackMove.power>75))
-                        mv.power = random.nextInt(5) * 5 + 80;
                 }
                 if(mv.name.equalsIgnoreCase("fly")||
                         mv.name.equalsIgnoreCase("cut")||
                         mv.name.equalsIgnoreCase("surf")||
                         mv.name.equalsIgnoreCase("rock smash")||
                         mv.name.equalsIgnoreCase("waterfall")||
+                        mv.name.equalsIgnoreCase("strength")||
                         mv.name.equalsIgnoreCase("rock climb")){
-                    mv.power = random.nextInt(3) * 7 + 70; // 70 ... 90
+                    mv.power = random.nextInt(5) * 5 + 70; // 70 ... 90
                     mv.unbuffedPower = mv.power;
                     }
                 if (mv.name.contains("Beat Up")){
@@ -3947,6 +3950,7 @@ public abstract class AbstractRomHandler implements RomHandler {
 
             // Sort the damaging moves by power
             damagingMoves.sort(Comparator.comparingDouble(m -> m.unbuffedPower * m.hitCount));
+            damagingMoves.forEach(m -> System.out.println(m.name + ": " +m.unbuffedPower * m.hitCount + " " +m.power * m.hitCount ));
 
             // Reassign damaging moves in the ordered positions
             for (int i = 0; i < damagingMoves.size(); i++) {
