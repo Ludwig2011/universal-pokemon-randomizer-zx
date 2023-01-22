@@ -2885,7 +2885,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                         mv.power = random.nextInt(7) * 5 + 60; // 60 ... 90
                         break;
                     case 3:
-                        mv.power = random.nextInt(15) * 5 + 40; // 40 ... 110
+                        mv.power = random.nextInt(13) * 5 + 40; // 40 ... 100
                         break;
                 }
                 track.add(mv);
@@ -2896,7 +2896,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                         mv.power = random.nextInt(5) * 5 + 80;
                     }
                 }
-                mv.unbuffedPower = mv.power;//TODO: nerf rollout/iceball, recoil??????????
+                mv.unbuffedPower = mv.power;
                 if(mv.isChargeMove && !mv.isPositiveChargeMove) {
                     mv.power = roundToNearestFive(Math.round(mv.power * 2));
                 }else if(mv.isRechargeMove || mv.name.equalsIgnoreCase("skull bash")) {
@@ -2904,8 +2904,8 @@ public abstract class AbstractRomHandler implements RomHandler {
                 }else if(mv.statChanges[0].stages <0) {
                     if(mv.statChangeMoveType == StatChangeMoveType.DAMAGE_USER)
                         mv.power = roundToNearestFive(mv.power * (1 + (0.2 * (-mv.statChanges[0].stages))));
-                }else if(mv.recoilPercent > 20) {
-                    mv.power = roundToNearestFive(mv.power * ((mv.recoilPercent + 100) / 100));
+                }else if(mv.recoilPercent > 5) {
+                    mv.power = roundToNearestFive(mv.power * ((mv.recoilPercent + 100.0) / 100.0));
                 }
                 if(mv.name.equalsIgnoreCase("fly")||
                         mv.name.equalsIgnoreCase("cut")||
@@ -2917,6 +2917,11 @@ public abstract class AbstractRomHandler implements RomHandler {
                     mv.power = random.nextInt(5) * 5 + 70; // 70 ... 90
                     mv.unbuffedPower = mv.power;
                     }
+                if(mv.name.equalsIgnoreCase("rollout")||
+                        mv.name.equalsIgnoreCase("ice ball")){
+                    mv.power = random.nextInt(5) * 5 + 40; // 40 ... 60
+                    mv.unbuffedPower = mv.power;
+                }
                 if (mv.name.contains("Beat Up")){
                     mv.power = random.nextInt(5) * 5 + 10; // 10 ... 30
                 }
@@ -2924,8 +2929,8 @@ public abstract class AbstractRomHandler implements RomHandler {
                     // Divide randomized power by average hit count, round to
                     // nearest 5
                     mv.power = (int) (Math.round(mv.power / mv.hitCount / 5) * 5);
-                    if (mv.power <= 25) {
-                        mv.power = 25;
+                    if (mv.power <= 20) {
+                        mv.power = 20;
                     }
                     mv.unbuffedPower = mv.power;
                 }
@@ -3950,7 +3955,6 @@ public abstract class AbstractRomHandler implements RomHandler {
 
             // Sort the damaging moves by power
             damagingMoves.sort(Comparator.comparingDouble(m -> m.unbuffedPower * m.hitCount));
-            damagingMoves.forEach(m -> System.out.println(m.name + ": " +m.unbuffedPower * m.hitCount + " " +m.power * m.hitCount ));
 
             // Reassign damaging moves in the ordered positions
             for (int i = 0; i < damagingMoves.size(); i++) {
