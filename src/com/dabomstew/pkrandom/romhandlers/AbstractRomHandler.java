@@ -2896,7 +2896,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                         mv.power = random.nextInt(5) * 5 + 80;
                     }
                 }
-                mv.unbuffedPower = mv.power;
+                mv.unbuffedPower = mv.power;//TODO: nerf rollout/iceball, recoil??????????
                 if(mv.isChargeMove && !mv.isPositiveChargeMove) {
                     mv.power = roundToNearestFive(Math.round(mv.power * 2));
                 }else if(mv.isRechargeMove || mv.name.equalsIgnoreCase("skull bash")) {
@@ -7075,14 +7075,14 @@ public abstract class AbstractRomHandler implements RomHandler {
         // start with within 10% and add 5% either direction till we find
         // something
         int balancedBST = bstBalanceLevel * 10 + 250;
-        int currentBST = Math.min(current.bstForPowerLevels(), balancedBST);
+        int currentBST = Math.min(current.bstForWildPowerLevels(), balancedBST);
         int minTarget = currentBST - currentBST / 10;
         int maxTarget = currentBST + currentBST / 10;
         List<Pokemon> canPick = new ArrayList<>();
         int expandRounds = 0;
         while (canPick.isEmpty() || (canPick.size() < 3 && expandRounds < 3)) {
             for (Pokemon pk : pokemonPool) {
-                if (pk.bstForPowerLevels() >= minTarget && pk.bstForPowerLevels() <= maxTarget
+                if (pk.bstForWildPowerLevels() >= minTarget && pk.bstForWildPowerLevels() <= maxTarget
                         && (!banSamePokemon || pk != current) && (usedUp == null || !usedUp.contains(pk))
                         && !canPick.contains(pk)) {
                     canPick.add(pk);

@@ -149,6 +149,8 @@ public class Pokemon implements Comparable<Pokemon> {
         return boost;
     }
 
+
+
     private enum focus {
         ATK, SP_ATK, H_ATK, DEF, SP_DEF, H_DEF
     }
@@ -290,13 +292,17 @@ public class Pokemon implements Comparable<Pokemon> {
 
     public int bstForPowerLevels() {
         // Take into account Shedinja's purposefully nerfed HP
+        return hp + attack + defense + spatk + spdef + speed;
+
+    }
+
+    public int bstForWildPowerLevels() {
         if (number == Species.dunsparce) {
             return 260;
-        } else {
+        }else {
             return hp + attack + defense + spatk + spdef + speed;
         }
     }
-
     public double getAttackSpecialAttackRatio() {
         return (double)attack / ((double)attack + (double)spatk);
     }
