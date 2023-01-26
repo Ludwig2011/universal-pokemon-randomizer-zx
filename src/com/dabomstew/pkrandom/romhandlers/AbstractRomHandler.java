@@ -1655,7 +1655,7 @@ public abstract class AbstractRomHandler implements RomHandler {
     }
 
     @Override
-    public void randomizeTrainerPokes(Settings settings) {
+    public void randomizeTrainerPokes(Settings settings) {//TODO: logic for giving pokemon move of same type
         boolean usePowerLevels = settings.isTrainersUsePokemonOfSimilarStrength();
         boolean weightByFrequency = settings.isTrainersMatchTypingDistribution();
         boolean noLegendaries = settings.isTrainersBlockLegendaries();
@@ -2903,7 +2903,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                     mv.power = roundToNearestFive(mv.power * 1.5);
                 }else if(mv.statChanges[0].stages <0) {
                     if(mv.statChangeMoveType == StatChangeMoveType.DAMAGE_USER)
-                        mv.power = roundToNearestFive(mv.power * (1 + (0.2 * (-mv.statChanges[0].stages))));
+                        mv.power = roundToNearestFive(mv.power * (1 + (0.25 * (-mv.statChanges[0].stages))));
                 }else if(mv.recoilPercent > 5) {
                     mv.power = roundToNearestFive(mv.power * ((mv.recoilPercent + 100.0) / 100.0));
                 }
