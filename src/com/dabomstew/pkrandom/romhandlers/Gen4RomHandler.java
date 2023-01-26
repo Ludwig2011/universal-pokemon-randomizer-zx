@@ -5515,6 +5515,10 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
                     else if (relationship.attacker == Type.GHOST && relationship.defender == Type.NORMAL) {
                         relationship.effectiveness = Effectiveness.NEUTRAL;
                     }
+                    // Change FIGHTING 2x against Normal to FIGHTING 1x to Normal !Space!
+                    else if (relationship.attacker == Type.FIGHTING && relationship.defender == Type.NORMAL) {
+                        relationship.effectiveness = Effectiveness.NEUTRAL;
+                    }
                     // Change Steel 0.5x against Fire to Steel 1x to Fire !Space!
                     else if (relationship.attacker == Type.STEEL && relationship.defender == Type.FIRE) {
                         relationship.effectiveness = Effectiveness.NEUTRAL;
@@ -5533,6 +5537,10 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
                     else if (relationship.attacker == Type.ICE && relationship.defender == Type.WATER) {
                         relationship.effectiveness = Effectiveness.NEUTRAL;
                     }
+                    // water resists rock
+                    else if (relationship.attacker == Type.ROCK && relationship.defender == Type.WATER) {
+                        relationship.effectiveness = Effectiveness.HALF;
+                    }
                     // Poison strong against fighting
                     else if (relationship.attacker == Type.POISON && relationship.defender == Type.FIGHTING) {
                         relationship.effectiveness = Effectiveness.DOUBLE;
@@ -5542,11 +5550,15 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
                         relationship.effectiveness = Effectiveness.DOUBLE;
                     }
                     // Poison resists against water
-                    //else if (relationship.attacker == Type.WATER && relationship.defender == Type.POISON) {
-                    //    relationship.effectiveness = Effectiveness.HALF;
-                    //} !Space!
+                    else if (relationship.attacker == Type.WATER && relationship.defender == Type.POISON) {
+                        relationship.effectiveness = Effectiveness.HALF;
+                    }
                     // Poison neutral against grass
                     else if (relationship.attacker == Type.POISON && relationship.defender == Type.GRASS) {
+                        relationship.effectiveness = Effectiveness.NEUTRAL;
+                    }
+                    // Grass neutral against Poison
+                    else if (relationship.attacker == Type.GRASS && relationship.defender == Type.POISON) {
                         relationship.effectiveness = Effectiveness.NEUTRAL;
                     }
                     // Poison neutral against ground
@@ -5560,6 +5572,14 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
                     // Bug immune Dragon
                     else if (relationship.attacker == Type.DRAGON && relationship.defender == Type.BUG) {
                         relationship.effectiveness = Effectiveness.ZERO;
+                    }
+                    // Psychic neutral against Bug
+                    else if (relationship.attacker == Type.PSYCHIC && relationship.defender == Type.BUG) {
+                        relationship.effectiveness = Effectiveness.NEUTRAL;
+                    }
+                    // Bug resists Bug
+                    else if (relationship.attacker == Type.BUG && relationship.defender == Type.BUG) {
+                        relationship.effectiveness = Effectiveness.HALF;
                     }
                     // Rock resists Rock
                     else if (relationship.attacker == Type.ROCK && relationship.defender == Type.ROCK) {
@@ -5577,10 +5597,6 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
                     else if (relationship.attacker == Type.FIRE && relationship.defender == Type.GROUND) {
                         relationship.effectiveness = Effectiveness.HALF;
                     }
-                    // Ground resists Steel
-                    //else if (relationship.attacker == Type.STEEL && relationship.defender == Type.GROUND) {
-                    //    relationship.effectiveness = Effectiveness.HALF;
-                    //} !Space!
                     if(relationship.effectiveness == Effectiveness.NEUTRAL){
                         toBeTypeEffectivenessTable.remove(relationship);
                     }
