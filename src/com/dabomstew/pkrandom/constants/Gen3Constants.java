@@ -525,7 +525,13 @@ public class Gen3Constants {
         // non-bad items
         // ban specific pokemon hold items, berries, apricorns, mail
         nonBadItemsRSE = allowedItems.copy();
-        nonBadItemsRSE.banSingles(Gen3Items.lightBall, Gen3Items.oranBerry, Gen3Items.soulDew);
+        nonBadItemsRSE.banSingles(Gen3Items.lightBall, Gen3Items.oranBerry,
+                Gen3Items.soulDew, Gen3Items.escapeRope, Gen3Items.repel, Gen3Items.machoBrace,
+                Gen3Items.quickClaw , Gen3Items.everstone , Gen3Items.silkScarf);
+        nonBadItemsRSE.banRange(Gen3Items.masterBall, 12); // balls
+        nonBadItemsRSE.banRange(Gen3Items.potion, 26); // medicine
+        nonBadItemsRSE.banRange(Gen3Items.guardSpec, 9); // battle items
+        nonBadItemsRSE.banRange(Gen3Items.tinyMushroom, 6); // money items
         nonBadItemsRSE.banRange(Gen3Items.orangeMail, 12); // mail
         nonBadItemsRSE.banRange(Gen3Items.figyBerry, 33); // berries
         nonBadItemsRSE.banRange(Gen3Items.luckyPunch, 4); // pokemon specific
