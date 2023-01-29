@@ -273,7 +273,7 @@ public interface RomHandler {
 
     void doubleBattleMode();
 
-    List<Move> getMoveSelectionPoolAtLevel(TrainerPokemon tp, boolean cyclicEvolutions);
+    List<Move> getMoveSelectionPoolAtLevel(TrainerPokemon tp, boolean cyclicEvolutions,boolean noEggTutorTM);
 
     void pickTrainerMovesets(Settings settings);
 

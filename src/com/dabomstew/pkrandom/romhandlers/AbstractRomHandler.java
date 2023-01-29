@@ -1655,7 +1655,7 @@ public abstract class AbstractRomHandler implements RomHandler {
     }
 
     @Override
-    public void randomizeTrainerPokes(Settings settings) {//TODO: logic for giving pokemon move of same type
+    public void randomizeTrainerPokes(Settings settings) {
         boolean usePowerLevels = settings.isTrainersUsePokemonOfSimilarStrength();
         boolean weightByFrequency = settings.isTrainersMatchTypingDistribution();
         boolean noLegendaries = settings.isTrainersBlockLegendaries();
@@ -1911,7 +1911,8 @@ public abstract class AbstractRomHandler implements RomHandler {
                 tp.pokemon = newPK;
                 setFormeForTrainerPokemon(tp, newPK);
                 tp.abilitySlot = getRandomAbilitySlot(newPK);
-                tp.resetMoves = true;
+                tp.resetMoves = false;
+                replaceTrainerPokeMoves(tp,settings);
 
                 if (!eliteFourRival) {
                     if (eliteFourSetUniquePokemon) {
@@ -1959,6 +1960,42 @@ public abstract class AbstractRomHandler implements RomHandler {
 
         // Save it all up
         this.setTrainers(currentTrainers, false);
+    }
+
+    private void replaceTrainerPokeMoves(TrainerPokemon tp,Settings settings) {//TODO: test
+        boolean isCyclicEvolutions = settings.getEvolutionsMod() == Settings.EvolutionsMod.RANDOM_EVERY_LEVEL;
+        List<Move> levelMovePool = getMoveSelectionPoolAtLevel(tp,isCyclicEvolutions,true);
+        if(tp.level>40){
+            levelMovePool = getMoveSelectionPoolAtLevel(tp,isCyclicEvolutions,false);
+        }
+        List<Move> sortedMovePool = new ArrayList<>();
+        for(Move m : levelMovePool) {
+            if (m.power > 5) {
+                System.out.println(m.name + ": " +m.unbuffedPower * m.hitCount);
+                sortedMovePool.add(m);
+            }
+        }
+        sortedMovePool.sort((m1, m2) -> {
+            if (m1.unbuffedPower * m1.hitCount > m2.unbuffedPower * m2.hitCount) {
+                return -1;
+            } else if (m1.unbuffedPower * m1.hitCount < m2.unbuffedPower * m2.hitCount) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+        tp.moves[0] = sortedMovePool.stream().filter(m -> m.type == tp.pokemon.primaryType || m.type == tp.pokemon.secondaryType).findFirst().get().number;
+        System.out.println(sortedMovePool.stream().filter(m -> m.type == tp.pokemon.primaryType || m.type == tp.pokemon.secondaryType).findFirst().get().name);
+        int i = 0;
+        for(Move m : levelMovePool) {
+            if (m.power < 5) {
+                sortedMovePool.add(i,m);
+            }
+            i++;
+        }
+        tp.moves[1] = sortedMovePool.get(0).number;
+        tp.moves[2] = sortedMovePool.get(1).number;
+        tp.moves[3] = sortedMovePool.get(2).number;
     }
 
     @Override
@@ -2171,7 +2208,7 @@ public abstract class AbstractRomHandler implements RomHandler {
     private List<Integer> allTMMoves, allTutorMoves;
 
     @Override
-    public List<Move> getMoveSelectionPoolAtLevel(TrainerPokemon tp, boolean cyclicEvolutions) {
+    public List<Move> getMoveSelectionPoolAtLevel(TrainerPokemon tp, boolean cyclicEvolutions, boolean noEggTutorTM) {
 
         List<Move> moves = getMoves();
         double eggMoveProbability = 0.1;
@@ -2230,30 +2267,14 @@ public abstract class AbstractRomHandler implements RomHandler {
                         .collect(Collectors.toList()));
             }
         }
-
-        // TM Moves
-        boolean[] tmCompat = allTMCompat.get(getAltFormeOfPokemon(tp.pokemon, tp.forme));
-        for (int tmMove: allTMMoves) {
-            if (tmCompat[allTMMoves.indexOf(tmMove) + 1]) {
-                Move thisMove = moves.get(tmMove);
-                if (thisMove.power > 1 && tp.level * 3 > thisMove.power * thisMove.hitCount &&
-                        this.random.nextDouble() < tmMoveProbability) {
-                    moveSelectionPoolAtLevel.add(thisMove);
-                } else if ((thisMove.power <= 1 && this.random.nextInt(100) < tp.level) ||
-                        this.random.nextInt(200) < tp.level) {
-                    moveSelectionPoolAtLevel.add(thisMove);
-                }
-            }
-        }
-
-        // Move Tutor Moves
-        if (hasMoveTutors()) {
-            boolean[] tutorCompat = allTutorCompat.get(getAltFormeOfPokemon(tp.pokemon, tp.forme));
-            for (int tutorMove: allTutorMoves) {
-                if (tutorCompat[allTutorMoves.indexOf(tutorMove) + 1]) {
-                    Move thisMove = moves.get(tutorMove);
+        if(!noEggTutorTM){
+            // TM Moves
+            boolean[] tmCompat = allTMCompat.get(getAltFormeOfPokemon(tp.pokemon, tp.forme));
+            for (int tmMove: allTMMoves) {
+                if (tmCompat[allTMMoves.indexOf(tmMove) + 1]) {
+                    Move thisMove = moves.get(tmMove);
                     if (thisMove.power > 1 && tp.level * 3 > thisMove.power * thisMove.hitCount &&
-                            this.random.nextDouble() < tutorMoveProbability) {
+                            this.random.nextDouble() < tmMoveProbability) {
                         moveSelectionPoolAtLevel.add(thisMove);
                     } else if ((thisMove.power <= 1 && this.random.nextInt(100) < tp.level) ||
                             this.random.nextInt(200) < tp.level) {
@@ -2261,29 +2282,44 @@ public abstract class AbstractRomHandler implements RomHandler {
                     }
                 }
             }
+
+            // Move Tutor Moves
+            if (hasMoveTutors()) {
+                boolean[] tutorCompat = allTutorCompat.get(getAltFormeOfPokemon(tp.pokemon, tp.forme));
+                for (int tutorMove: allTutorMoves) {
+                    if (tutorCompat[allTutorMoves.indexOf(tutorMove) + 1]) {
+                        Move thisMove = moves.get(tutorMove);
+                        if (thisMove.power > 1 && tp.level * 3 > thisMove.power * thisMove.hitCount &&
+                                this.random.nextDouble() < tutorMoveProbability) {
+                            moveSelectionPoolAtLevel.add(thisMove);
+                        } else if ((thisMove.power <= 1 && this.random.nextInt(100) < tp.level) ||
+                                this.random.nextInt(200) < tp.level) {
+                            moveSelectionPoolAtLevel.add(thisMove);
+                        }
+                    }
+                }
+            }
+
+            // Egg Moves
+            if (!cyclicEvolutions) {
+                Pokemon firstEvo;
+                if (altFormesCanHaveDifferentEvolutions()) {
+                    firstEvo = getAltFormeOfPokemon(tp.pokemon, tp.forme);
+                } else {
+                    firstEvo = tp.pokemon;
+                }
+                while (!firstEvo.evolutionsTo.isEmpty()) {
+                    firstEvo = firstEvo.evolutionsTo.get(0).from;
+                }
+                if (allEggMoves.get(firstEvo.number) != null) {
+                    moveSelectionPoolAtLevel.addAll(allEggMoves.get(firstEvo.number)
+                            .stream()
+                            .filter(egm -> this.random.nextDouble() < eggMoveProbability)
+                            .map(moves::get)
+                            .collect(Collectors.toList()));
+                }
+            }
         }
-
-        // Egg Moves
-        if (!cyclicEvolutions) {
-            Pokemon firstEvo;
-            if (altFormesCanHaveDifferentEvolutions()) {
-                firstEvo = getAltFormeOfPokemon(tp.pokemon, tp.forme);
-            } else {
-                firstEvo = tp.pokemon;
-            }
-            while (!firstEvo.evolutionsTo.isEmpty()) {
-                firstEvo = firstEvo.evolutionsTo.get(0).from;
-            }
-            if (allEggMoves.get(firstEvo.number) != null) {
-                moveSelectionPoolAtLevel.addAll(allEggMoves.get(firstEvo.number)
-                        .stream()
-                        .filter(egm -> this.random.nextDouble() < eggMoveProbability)
-                        .map(moves::get)
-                        .collect(Collectors.toList()));
-            }
-        }
-
-
 
         return moveSelectionPoolAtLevel.stream().distinct().collect(Collectors.toList());
     }
@@ -2301,7 +2337,7 @@ public abstract class AbstractRomHandler implements RomHandler {
             for (TrainerPokemon tp: t.pokemon) {
                 tp.resetMoves = false;
 
-                List<Move> movesAtLevel = getMoveSelectionPoolAtLevel(tp, isCyclicEvolutions);
+                List<Move> movesAtLevel = getMoveSelectionPoolAtLevel(tp, isCyclicEvolutions,false);
 
                 movesAtLevel = trimMoveList(tp, movesAtLevel, doubleBattleMode);
 
@@ -5346,12 +5382,12 @@ public abstract class AbstractRomHandler implements RomHandler {
     }
 
     @Override
-    public void randomizeFieldItems(Settings settings) { // TODO remove TM from options once set
+    public void randomizeFieldItems(Settings settings) {
         boolean banBadItems = settings.isBanBadRandomFieldItems();
         boolean distributeItemsControl = settings.getFieldItemsMod() == Settings.FieldItemsMod.RANDOM_EVEN;
         boolean uniqueItems = !settings.isBalanceShopPrices();
 
-        ItemList possibleItems = banBadItems ? this.getNonBadItems().copy() : this.getAllowedItems().copy();
+        ItemList possibleItems = banBadItems ? this.getNonBadItems().copy() : this.getAllowedItems().copy(); //TODO: test
         List<Integer> currentItems = this.getRegularFieldItems();
         List<Integer> currentTMs = this.getCurrentFieldTMs();
         List<Integer> requiredTMs = this.getRequiredFieldTMs();
