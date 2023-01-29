@@ -5461,22 +5461,34 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
             if (typeEffectivenessTableOffset > 0) {
                 List<TypeRelationship> typeEffectivenessTable = readTypeEffectivenessTable(battleOverlay, typeEffectivenessTableOffset);
                 List<TypeRelationship> wantedRelations = new ArrayList<>();
+                wantedRelations.add(new TypeRelationship(Type.PSYCHIC,Type.STEEL,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.DARK,Type.STEEL,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.GHOST,Type.STEEL,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.NORMAL,Type.ROCK,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.NORMAL,Type.STEEL,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.NORMAL,Type.GHOST,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.GHOST,Type.NORMAL,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.FIGHTING,Type.NORMAL,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.STEEL,Type.FIRE,Effectiveness.NEUTRAL));
                 wantedRelations.add(new TypeRelationship(Type.WATER,Type.ICE,Effectiveness.NEUTRAL));
                 wantedRelations.add(new TypeRelationship(Type.DRAGON,Type.ICE,Effectiveness.NEUTRAL));
                 wantedRelations.add(new TypeRelationship(Type.GROUND,Type.ICE,Effectiveness.NEUTRAL));
                 wantedRelations.add(new TypeRelationship(Type.ICE,Type.WATER,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.ROCK,Type.WATER,Effectiveness.NEUTRAL));
                 wantedRelations.add(new TypeRelationship(Type.POISON,Type.FIGHTING,Effectiveness.NEUTRAL));
                 wantedRelations.add(new TypeRelationship(Type.POISON,Type.WATER,Effectiveness.NEUTRAL));
                 wantedRelations.add(new TypeRelationship(Type.WATER,Type.POISON,Effectiveness.NEUTRAL));
-                wantedRelations.add(new TypeRelationship(Type.POISON,Type.WATER,Effectiveness.NEUTRAL));
-                wantedRelations.add(new TypeRelationship(Type.POISON,Type.WATER,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.POISON,Type.GRASS,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.GRASS,Type.POISON,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.POISON,Type.GROUND,Effectiveness.NEUTRAL));
                 wantedRelations.add(new TypeRelationship(Type.BUG,Type.DRAGON,Effectiveness.NEUTRAL));
                 wantedRelations.add(new TypeRelationship(Type.DRAGON,Type.BUG,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.PSYCHIC,Type.BUG,Effectiveness.NEUTRAL));
+                wantedRelations.add(new TypeRelationship(Type.BUG,Type.BUG,Effectiveness.NEUTRAL));
                 wantedRelations.add(new TypeRelationship(Type.ROCK,Type.ROCK,Effectiveness.NEUTRAL));
                 wantedRelations.add(new TypeRelationship(Type.BUG,Type.ROCK,Effectiveness.NEUTRAL));
                 wantedRelations.add(new TypeRelationship(Type.STEEL,Type.FIGHTING,Effectiveness.NEUTRAL));
                 wantedRelations.add(new TypeRelationship(Type.FIRE,Type.GROUND,Effectiveness.NEUTRAL));
-                wantedRelations.add(new TypeRelationship(Type.STEEL,Type.GROUND,Effectiveness.NEUTRAL));
                 log("--Updating Type Effectiveness--");
                 for(TypeRelationship wantedTypeRelation : wantedRelations){
                     if(!exists(typeEffectivenessTable, wantedTypeRelation)){
