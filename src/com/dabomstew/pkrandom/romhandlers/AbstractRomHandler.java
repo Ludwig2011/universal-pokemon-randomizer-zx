@@ -1962,7 +1962,8 @@ public abstract class AbstractRomHandler implements RomHandler {
         this.setTrainers(currentTrainers, false);
     }
 
-    private void replaceTrainerPokeMoves(TrainerPokemon tp,Settings settings) {//TODO: test
+    private void replaceTrainerPokeMoves(TrainerPokemon tp,Settings settings) {
+        System.out.println(tp.pokemon.primaryType + " " +tp.pokemon.secondaryType);
         boolean isCyclicEvolutions = settings.getEvolutionsMod() == Settings.EvolutionsMod.RANDOM_EVERY_LEVEL;
         List<Move> levelMovePool = getMoveSelectionPoolAtLevel(tp,isCyclicEvolutions,true);
         if(tp.level>40){
@@ -1971,7 +1972,7 @@ public abstract class AbstractRomHandler implements RomHandler {
         List<Move> sortedMovePool = new ArrayList<>();
         for(Move m : levelMovePool) {
             if (m.power > 5) {
-                System.out.println(m.name + ": " +m.unbuffedPower * m.hitCount);
+                System.out.println(m.name +" "+ m.type +": " +m.unbuffedPower * m.hitCount);
                 sortedMovePool.add(m);
             }
         }
@@ -1984,8 +1985,9 @@ public abstract class AbstractRomHandler implements RomHandler {
                 return 0;
             }
         });
-        tp.moves[0] = sortedMovePool.stream().filter(m -> m.type == tp.pokemon.primaryType || m.type == tp.pokemon.secondaryType).findFirst().get().number;
-        System.out.println(sortedMovePool.stream().filter(m -> m.type == tp.pokemon.primaryType || m.type == tp.pokemon.secondaryType).findFirst().get().name);
+        Move bestTypeMove = sortedMovePool.stream().filter(m -> m.type == tp.pokemon.primaryType || m.type == tp.pokemon.secondaryType).findFirst().get();
+        tp.moves[0] = bestTypeMove.number;
+        System.out.println(bestTypeMove.name);
         int i = 0;
         for(Move m : levelMovePool) {
             if (m.power < 5) {
@@ -1993,9 +1995,14 @@ public abstract class AbstractRomHandler implements RomHandler {
             }
             i++;
         }
+        sortedMovePool.remove(bestTypeMove);
         tp.moves[1] = sortedMovePool.get(0).number;
         tp.moves[2] = sortedMovePool.get(1).number;
         tp.moves[3] = sortedMovePool.get(2).number;
+        System.out.println(sortedMovePool.get(0).name +" "+ sortedMovePool.get(0).type +": " +sortedMovePool.get(0).unbuffedPower * sortedMovePool.get(0).hitCount);
+        System.out.println(sortedMovePool.get(1).name +" "+ sortedMovePool.get(1).type +": " +sortedMovePool.get(1).unbuffedPower * sortedMovePool.get(1).hitCount);
+        System.out.println(sortedMovePool.get(2).name +" "+ sortedMovePool.get(2).type +": " +sortedMovePool.get(2).unbuffedPower * sortedMovePool.get(2).hitCount);
+        System.out.println(bestTypeMove.name +" "+ bestTypeMove.type +": " +bestTypeMove.unbuffedPower * bestTypeMove.hitCount);
     }
 
     @Override
@@ -5387,7 +5394,7 @@ public abstract class AbstractRomHandler implements RomHandler {
         boolean distributeItemsControl = settings.getFieldItemsMod() == Settings.FieldItemsMod.RANDOM_EVEN;
         boolean uniqueItems = !settings.isBalanceShopPrices();
 
-        ItemList possibleItems = banBadItems ? this.getNonBadItems().copy() : this.getAllowedItems().copy(); //TODO: test
+        ItemList possibleItems = banBadItems ? this.getNonBadItems().copy() : this.getAllowedItems().copy();
         List<Integer> currentItems = this.getRegularFieldItems();
         List<Integer> currentTMs = this.getCurrentFieldTMs();
         List<Integer> requiredTMs = this.getRequiredFieldTMs();
