@@ -897,7 +897,11 @@ public class Gen4Constants {
         nonBadItems = allowedItems.copy();
 
         nonBadItems.banSingles(Items.oddKeystone, Items.griseousOrb, Items.soulDew, Items.lightBall,
-                Items.oranBerry, Items.quickPowder);
+                Items.oranBerry, Items.quickPowder, Items.repel, Items.escapeRope, Items.honey, Items.machoBrace,
+                Items.quickClaw, Items.smokeBall, Items.everstone, Items.silkScarf);
+        nonBadItems.banRange(Items.ultraBall,43); //balls and medicine
+        nonBadItems.banRange(Items.oldGateau,16); //battle items and flutes
+        nonBadItems.banRange(Items.tinyMushroom,6); //money items
         nonBadItems.banRange(Items.shoalSalt,2);
         nonBadItems.banRange(Items.growthMulch, 4); // mulch
         nonBadItems.banRange(Items.adamantOrb, 2); // orbs
