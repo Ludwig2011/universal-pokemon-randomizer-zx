@@ -36,7 +36,32 @@ public class GlobalConstants {
     public static final boolean[] bannedRandomMoves = new boolean[827], bannedForDamagingMove = new boolean[827];
     static {
         bannedRandomMoves[Moves.struggle] = true; //  self explanatory
+        bannedRandomMoves[Moves.tailWhip] = true; //  bad
+        bannedRandomMoves[Moves.leer] = true; //  bad
+        bannedRandomMoves[Moves.growl] = true; //  bad
+        bannedRandomMoves[Moves.roar] = true; //  bad
+        bannedRandomMoves[Moves.supersonic] = true; //  bad
+        bannedRandomMoves[Moves.mist] = true; //  bad
+        bannedRandomMoves[Moves.growth] = true; //  bad
+        bannedRandomMoves[Moves.poisonPowder] = true; //  bad
+        bannedRandomMoves[Moves.stringShot] = true; //  bad
+        bannedRandomMoves[Moves.harden] = true; //  bad
+        bannedRandomMoves[Moves.defenseCurl] = true; //  bad
+        bannedRandomMoves[Moves.smokescreen] = true; //  bad
+        bannedRandomMoves[Moves.confuseRay] = true; //  bad
+        bannedRandomMoves[Moves.bide] = true; //  bad
+        bannedRandomMoves[Moves.metronome] = true; //  bad
+        bannedRandomMoves[Moves.poisonGas] = true; //  bad
+        bannedRandomMoves[Moves.splash] = true; //  bad
+        bannedRandomMoves[Moves.cottonSpore] = true; //  bad
+        bannedRandomMoves[Moves.spite] = true; //  bad
+        bannedRandomMoves[Moves.scaryFace] = true; //  bad
+        bannedRandomMoves[Moves.charm] = true; //  bad
+        bannedRandomMoves[Moves.endure] = true; //  bad
+        bannedRandomMoves[Moves.lockOn] = true; //  bad
 
+        bannedForDamagingMove[Moves.lowKick] = true; //  bad
+        bannedForDamagingMove[Moves.counter] = true; //  hard to use
         bannedForDamagingMove[Moves.selfDestruct] = true;
         bannedForDamagingMove[Moves.dreamEater] = true;
         bannedForDamagingMove[Moves.explosion] = true;
