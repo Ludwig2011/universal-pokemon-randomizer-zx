@@ -3729,10 +3729,10 @@ public abstract class AbstractRomHandler implements RomHandler {
             int weakestTypeMoveIndex;
             if(learnt.contains(weakestTypeMove.number)){
                 weakestTypeMoveIndex = learnt.indexOf(weakestTypeMove.number);
-                oldMoveNumber = learnt.get(0);
+                oldMoveNumber = learnt.get(3);
                 learnt.set(weakestTypeMoveIndex,oldMoveNumber);
             }
-            learnt.set(0,weakestTypeMove.number);
+            learnt.set(3,weakestTypeMove.number);
             // write all moves for the pokemon
             for (int i = 0; i < learnt.size(); i++) {
                 moves.get(i).move = learnt.get(i);
