@@ -58,7 +58,9 @@ public class GlobalConstants {
         bannedRandomMoves[Moves.scaryFace] = true; //  bad
         bannedRandomMoves[Moves.charm] = true; //  bad
         bannedRandomMoves[Moves.endure] = true; //  bad
-        bannedRandomMoves[Moves.lockOn] = true; //  bad
+        bannedRandomMoves[Moves.lockOn] = true; // bad
+        bannedRandomMoves[Moves.odorSleuth] = true; //bad
+        bannedRandomMoves[Moves.fling] = true; //bad
 
         bannedForDamagingMove[Moves.lowKick] = true; //  bad
         bannedForDamagingMove[Moves.counter] = true; //  hard to use

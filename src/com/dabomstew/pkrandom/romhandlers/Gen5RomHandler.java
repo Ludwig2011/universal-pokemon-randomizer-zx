@@ -2536,12 +2536,100 @@ public class Gen5RomHandler extends AbstractDSRomHandler {
                 Effectiveness[][] typeEffectivenessTable = readTypeEffectivenessTable(battleOverlay, typeEffectivenessTableOffset);
                 log("--Updating Type Effectiveness--");
                 int steel = Gen5Constants.typeToByte(Type.STEEL);
-                int dark = Gen5Constants.typeToByte(Type.DARK);
                 int ghost = Gen5Constants.typeToByte(Type.GHOST);
+                int dark = Gen5Constants.typeToByte(Type.DARK);
+                int psychic = Gen5Constants.typeToByte(Type.PSYCHIC);
+                int bug = Gen5Constants.typeToByte(Type.BUG);
+                int dragon = Gen5Constants.typeToByte(Type.DRAGON);
+                int fight = Gen5Constants.typeToByte(Type.FIGHTING);
+                int poison = Gen5Constants.typeToByte(Type.POISON);
+                int fire = Gen5Constants.typeToByte(Type.FIRE);
+                int water = Gen5Constants.typeToByte(Type.WATER);
+                int grass = Gen5Constants.typeToByte(Type.GRASS);
+                int ice = Gen5Constants.typeToByte(Type.ICE);
+                int ground = Gen5Constants.typeToByte(Type.GROUND);
+                int rock = Gen5Constants.typeToByte(Type.ROCK);
                 typeEffectivenessTable[ghost][steel] = Effectiveness.NEUTRAL;
                 log("Replaced: Ghost not very effective vs Steel => Ghost neutral vs Steel");
+
                 typeEffectivenessTable[dark][steel] = Effectiveness.NEUTRAL;
                 log("Replaced: Dark not very effective vs Steel => Dark neutral vs Steel");
+
+                typeEffectivenessTable[psychic][steel] = Effectiveness.NEUTRAL;
+                log("Psychic neutral Steel");
+
+                typeEffectivenessTable[fight][fight] = Effectiveness.HALF;
+                log("Fight half Fight");
+
+                typeEffectivenessTable[rock][grass] = Effectiveness.HALF;
+                log("Rock half Grass ");
+
+                typeEffectivenessTable[fire][ground] = Effectiveness.HALF;
+                log("Fire half Ground ");
+
+                typeEffectivenessTable[steel][fight] = Effectiveness.HALF;
+                log("Steel half Fighting ");
+
+                typeEffectivenessTable[bug][rock] = Effectiveness.HALF;
+                log("Bug half Rock ");
+
+                typeEffectivenessTable[rock][rock] = Effectiveness.HALF;
+                log("Rock half Rock ");
+
+                typeEffectivenessTable[bug][bug] = Effectiveness.HALF;
+                log("Bug half Bug ");
+
+                typeEffectivenessTable[dragon][bug] = Effectiveness.ZERO;
+                log("Dragon zero Bug ");
+
+                typeEffectivenessTable[psychic][bug] = Effectiveness.NEUTRAL;
+                log("Psychic neutral Bug ");
+
+                typeEffectivenessTable[bug][dragon] = Effectiveness.DOUBLE;
+                log("Bug double Dragon ");
+
+                typeEffectivenessTable[poison][fight] = Effectiveness.DOUBLE;
+                log("Poison double Fighting ");
+                logBlankLine();
+
+                typeEffectivenessTable[poison][water] = Effectiveness.DOUBLE;
+                log("Poison double Water ");
+                logBlankLine();
+
+                typeEffectivenessTable[water][poison] = Effectiveness.HALF;
+                log("Water half Poison ");
+                logBlankLine();
+
+                typeEffectivenessTable[poison][grass] = Effectiveness.NEUTRAL;
+                log("Poison neutral Grass ");
+                logBlankLine();
+
+                typeEffectivenessTable[grass][poison] = Effectiveness.NEUTRAL;
+                log("Grass neutral Poison ");
+                logBlankLine();
+
+                typeEffectivenessTable[poison][ground] = Effectiveness.NEUTRAL;
+                log("Poison neutral Ground ");
+
+                typeEffectivenessTable[water][ice] = Effectiveness.HALF;
+                log("Water half Ice ");
+                logBlankLine();
+
+                typeEffectivenessTable[dragon][ice] = Effectiveness.HALF;
+                log("Dragon half Ice ");
+                logBlankLine();
+
+                typeEffectivenessTable[ground][ice] = Effectiveness.HALF;
+                log("Ground half Ice ");
+                logBlankLine();
+
+                typeEffectivenessTable[rock][water] = Effectiveness.HALF;
+                log("Rock half Water ");
+                logBlankLine();
+
+                typeEffectivenessTable[ice][water] = Effectiveness.NEUTRAL;
+                log("Ice neutral Water ");
+                logBlankLine();
                 logBlankLine();
                 writeTypeEffectivenessTable(typeEffectivenessTable, battleOverlay, typeEffectivenessTableOffset);
                 writeOverlay(romEntry.getInt("BattleOvlNumber"), battleOverlay);

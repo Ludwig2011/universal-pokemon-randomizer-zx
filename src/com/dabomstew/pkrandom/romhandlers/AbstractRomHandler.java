@@ -1963,7 +1963,7 @@ public abstract class AbstractRomHandler implements RomHandler {
     }
 
     private void replaceTrainerPokeMoves(TrainerPokemon tp,Settings settings) {
-        System.out.println(tp.pokemon.primaryType + " " +tp.pokemon.secondaryType);
+        //System.out.println(tp.pokemon.primaryType + " " +tp.pokemon.secondaryType);
         boolean isCyclicEvolutions = settings.getEvolutionsMod() == Settings.EvolutionsMod.RANDOM_EVERY_LEVEL;
         List<Move> levelMovePool = getMoveSelectionPoolAtLevel(tp,isCyclicEvolutions,true);
         if(tp.level>40){
@@ -1972,7 +1972,7 @@ public abstract class AbstractRomHandler implements RomHandler {
         List<Move> sortedMovePool = new ArrayList<>();
         for(Move m : levelMovePool) {
             if (m.power > 5) {
-                System.out.println(m.name +" "+ m.type +": " +m.unbuffedPower * m.hitCount);
+                //System.out.println(m.name +" "+ m.type +": " +m.unbuffedPower * m.hitCount);
                 sortedMovePool.add(m);
             }
         }
@@ -1987,7 +1987,7 @@ public abstract class AbstractRomHandler implements RomHandler {
         });
         Move bestTypeMove = sortedMovePool.stream().filter(m -> m.type == tp.pokemon.primaryType || m.type == tp.pokemon.secondaryType).findFirst().get();
         tp.moves[0] = bestTypeMove.number;
-        System.out.println(bestTypeMove.name);
+        //System.out.println(bestTypeMove.name);
         int i = 0;
         for(Move m : levelMovePool) {
             if (m.power < 5) {
@@ -1999,10 +1999,10 @@ public abstract class AbstractRomHandler implements RomHandler {
         tp.moves[1] = sortedMovePool.get(0).number;
         tp.moves[2] = sortedMovePool.get(1).number;
         tp.moves[3] = sortedMovePool.get(2).number;
-        System.out.println(sortedMovePool.get(0).name +" "+ sortedMovePool.get(0).type +": " +sortedMovePool.get(0).unbuffedPower * sortedMovePool.get(0).hitCount);
-        System.out.println(sortedMovePool.get(1).name +" "+ sortedMovePool.get(1).type +": " +sortedMovePool.get(1).unbuffedPower * sortedMovePool.get(1).hitCount);
-        System.out.println(sortedMovePool.get(2).name +" "+ sortedMovePool.get(2).type +": " +sortedMovePool.get(2).unbuffedPower * sortedMovePool.get(2).hitCount);
-        System.out.println(bestTypeMove.name +" "+ bestTypeMove.type +": " +bestTypeMove.unbuffedPower * bestTypeMove.hitCount);
+        //System.out.println(sortedMovePool.get(0).name +" "+ sortedMovePool.get(0).type +": " +sortedMovePool.get(0).unbuffedPower * sortedMovePool.get(0).hitCount);
+        //System.out.println(sortedMovePool.get(1).name +" "+ sortedMovePool.get(1).type +": " +sortedMovePool.get(1).unbuffedPower * sortedMovePool.get(1).hitCount);
+        //System.out.println(sortedMovePool.get(2).name +" "+ sortedMovePool.get(2).type +": " +sortedMovePool.get(2).unbuffedPower * sortedMovePool.get(2).hitCount);
+        //System.out.println(bestTypeMove.name +" "+ bestTypeMove.type +": " +bestTypeMove.unbuffedPower * bestTypeMove.hitCount);
     }
 
     @Override
@@ -2940,7 +2940,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                     }
                 }
                 mv.unbuffedPower = mv.power;
-                if(mv.isChargeMove && !mv.isPositiveChargeMove) {
+                if(mv.isChargeMove && !mv.isPositiveChargeMove && !(mv.name.equalsIgnoreCase("sky drop")||mv.name.equalsIgnoreCase("shadow force"))) {
                     mv.power = roundToNearestFive(Math.round(mv.power * 2));
                 }else if(mv.isRechargeMove || mv.name.equalsIgnoreCase("skull bash")) {
                     mv.power = roundToNearestFive(mv.power * 1.5);
@@ -2948,7 +2948,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                     if(mv.statChangeMoveType == StatChangeMoveType.DAMAGE_USER)
                         mv.power = roundToNearestFive(mv.power * (1 + (0.25 * (-mv.statChanges[0].stages))));
                 }else if(mv.recoilPercent > 5) {
-                    mv.power = roundToNearestFive(mv.power * ((mv.recoilPercent + 100.0) / 100.0));
+                    mv.power = roundToNearestFive(mv.power * ((mv.recoilPercent + 100.0) / 100.0))+10;
                 }
                 if(mv.name.equalsIgnoreCase("fly")||
                         mv.name.equalsIgnoreCase("cut")||
@@ -2964,6 +2964,12 @@ public abstract class AbstractRomHandler implements RomHandler {
                         mv.name.equalsIgnoreCase("ice ball")){
                     mv.power = random.nextInt(5) * 5 + 40; // 40 ... 60
                     mv.unbuffedPower = mv.power;
+                }
+                if(mv.name.equalsIgnoreCase("explosion")||
+                        mv.name.equalsIgnoreCase("selfdestruct")||
+                        mv.name.equalsIgnoreCase("self-destruct")){
+                    mv.power = random.nextInt(11) * 5 + 150; // 150 ... 200
+                    mv.unbuffedPower = roundToNearestFive(mv.power*0.75);
                 }
                 if (mv.name.contains("Beat Up")){
                     mv.power = random.nextInt(5) * 5 + 10; // 10 ... 30
