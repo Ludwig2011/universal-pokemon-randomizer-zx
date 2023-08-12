@@ -212,7 +212,14 @@ public class Pokemon implements Comparable<Pokemon> {
         //    attack +=10;
         //    spatk +=10;
         //}
+        if(primaryType.equals(Type.GRASS)||secondaryType.equals(Type.GRASS)){
+            hp = (int) Math.round(hp*1.25);
+        }
 
+        if((primaryType.equals(Type.BUG)&&secondaryType.equals(Type.ICE))||(primaryType.equals(Type.ICE)&&secondaryType.equals(Type.BUG))){
+            defense = (int) Math.round(defense*1.5);
+            spdef = (int) Math.round(spdef*1.5);
+        }
         // Check for something we can't store
         if (hp > 255 || attack > 255 || defense > 255 || spatk > 255 || spdef > 255 || speed > 255) {
             // re roll
