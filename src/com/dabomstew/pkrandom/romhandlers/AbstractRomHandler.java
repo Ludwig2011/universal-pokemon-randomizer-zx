@@ -3714,7 +3714,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                 track.add(mv);
                 learnt.add(mv.number);
             }
-
+            origin/flatbuffer
 //            Collections.shuffle(learnt, random);
 //            if (learnt.get(lv1index) != lv1AttackingMove) {
 //                for (int i = 0; i < learnt.size(); i++) {
@@ -3726,9 +3726,9 @@ public abstract class AbstractRomHandler implements RomHandler {
 //                }
 //            }
 
-            Move weakestTypeMove = track.stream().filter(m -> m.power > 1 && (m.type == pkmn.primaryType || m.type == pkmn.primaryType)).findFirst().get();
+            Move weakestTypeMove = track.stream().filter(m -> m.power > 1 && (m.type == pkmn.primaryType || m.type == pkmn.secondaryType)).findFirst().get();
             for(Move move:track){
-                if((move.type == pkmn.primaryType || move.type == pkmn.primaryType) && move.power > 1 && weakestTypeMove.unbuffedPower * weakestTypeMove.hitCount > move.unbuffedPower * move.hitCount)
+                if((move.type == pkmn.primaryType || move.type == pkmn.secondaryType) && move.power > 1 && weakestTypeMove.unbuffedPower * weakestTypeMove.hitCount > move.unbuffedPower * move.hitCount)
                 weakestTypeMove = move;
             }
             int oldMoveNumber;
