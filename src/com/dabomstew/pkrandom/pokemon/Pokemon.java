@@ -176,8 +176,11 @@ public class Pokemon implements Comparable<Pokemon> {
         }
         return r;
     }
-
     public void randomizeStatsWithinBST(Random random) {
+        randomizeStatsWithinBST(random,0);
+    }
+
+    public void randomizeStatsWithinBST(Random random, int rerolled) {
             // Minimum 20 HP, 10 everything else
             int bst = bst() - 70 + bstBoost();
 
@@ -223,7 +226,8 @@ public class Pokemon implements Comparable<Pokemon> {
         // Check for something we can't store
         if (hp > 255 || attack > 255 || defense > 255 || spatk > 255 || spdef > 255 || speed > 255) {
             // re roll
-            randomizeStatsWithinBST(random);
+            rerolled +=1;
+            randomizeStatsWithinBST(random,rerolled);
         }
 
     }

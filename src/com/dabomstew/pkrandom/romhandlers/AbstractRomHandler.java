@@ -1965,6 +1965,7 @@ public abstract class AbstractRomHandler implements RomHandler {
     private void replaceTrainerPokeMoves(TrainerPokemon tp,Settings settings) {
         //System.out.println(tp.pokemon.primaryType + " " +tp.pokemon.secondaryType);
         boolean isCyclicEvolutions = settings.getEvolutionsMod() == Settings.EvolutionsMod.RANDOM_EVERY_LEVEL;
+        int forceStartingMoveCount = settings.getGuaranteedMoveCount();
         List<Move> levelMovePool = getMoveSelectionPoolAtLevel(tp,isCyclicEvolutions,true);
         if(tp.level>40){
             levelMovePool = getMoveSelectionPoolAtLevel(tp,isCyclicEvolutions,false);
@@ -1985,6 +1986,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                 return 0;
             }
         });
+        //this can fail but i am kind of fine with it. Should just auto rerandomize though
         Move bestTypeMove = sortedMovePool.stream().filter(m -> m.type == tp.pokemon.primaryType || m.type == tp.pokemon.secondaryType).findFirst().get();
         tp.moves[0] = bestTypeMove.number;
         //System.out.println(bestTypeMove.name);
@@ -1996,9 +1998,9 @@ public abstract class AbstractRomHandler implements RomHandler {
             i++;
         }
         sortedMovePool.remove(bestTypeMove);
-        tp.moves[1] = sortedMovePool.get(0).number;
-        tp.moves[2] = sortedMovePool.get(1).number;
-        tp.moves[3] = sortedMovePool.get(2).number;
+        for(int im = 0;im<forceStartingMoveCount-1 ; im++){
+            tp.moves[im+1] = sortedMovePool.get(im).number;
+        }
         //System.out.println(sortedMovePool.get(0).name +" "+ sortedMovePool.get(0).type +": " +sortedMovePool.get(0).unbuffedPower * sortedMovePool.get(0).hitCount);
         //System.out.println(sortedMovePool.get(1).name +" "+ sortedMovePool.get(1).type +": " +sortedMovePool.get(1).unbuffedPower * sortedMovePool.get(1).hitCount);
         //System.out.println(sortedMovePool.get(2).name +" "+ sortedMovePool.get(2).type +": " +sortedMovePool.get(2).unbuffedPower * sortedMovePool.get(2).hitCount);
@@ -3714,7 +3716,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                 track.add(mv);
                 learnt.add(mv.number);
             }
-            origin/flatbuffer
+
 //            Collections.shuffle(learnt, random);
 //            if (learnt.get(lv1index) != lv1AttackingMove) {
 //                for (int i = 0; i < learnt.size(); i++) {
@@ -3738,7 +3740,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                 oldMoveNumber = learnt.get(3);
                 learnt.set(weakestTypeMoveIndex,oldMoveNumber);
             }
-            learnt.set(3,weakestTypeMove.number);
+            learnt.set(forceStartingMoveCount-1,weakestTypeMove.number);
             // write all moves for the pokemon
             for (int i = 0; i < learnt.size(); i++) {
                 moves.get(i).move = learnt.get(i);
