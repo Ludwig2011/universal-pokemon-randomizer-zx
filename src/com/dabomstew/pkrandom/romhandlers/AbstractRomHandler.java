@@ -2943,7 +2943,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                     }
                 }
                 mv.unbuffedPower = mv.power;
-                if(mv.isChargeMove && !mv.isPositiveChargeMove && !(mv.name.equalsIgnoreCase("sky drop")||mv.name.equalsIgnoreCase("shadow force"))) {
+                if(mv.isChargeMove && !mv.isPositiveChargeMove && !(mv.name.equalsIgnoreCase("sky drop")||mv.name.equalsIgnoreCase("shadow force")||mv.name.equalsIgnoreCase("dig"))) {
                     mv.power = roundToNearestFive(Math.round(mv.power * 2));
                 }else if(mv.isRechargeMove || mv.name.equalsIgnoreCase("skull bash")) {
                     mv.power = roundToNearestFive(mv.power * 1.5);
@@ -2965,7 +2965,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                     }
                 if(mv.name.equalsIgnoreCase("rollout")||
                         mv.name.equalsIgnoreCase("ice ball")){
-                    mv.power = random.nextInt(5) * 5 + 40; // 40 ... 60
+                    mv.power = random.nextInt(5) * 7 + 30; // 30 ... 60
                     mv.unbuffedPower = mv.power;
                 }
                 if(mv.name.equalsIgnoreCase("explosion")||
