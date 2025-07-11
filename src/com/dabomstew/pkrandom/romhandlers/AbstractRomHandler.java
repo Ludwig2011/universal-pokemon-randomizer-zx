@@ -1901,7 +1901,8 @@ public abstract class AbstractRomHandler implements RomHandler {
                                 swapThisMegaEvo,
                                 abilitiesAreRandomized,
                                 includeFormes,
-                                banIrregularAltFormes
+                                banIrregularAltFormes,
+                                t.importantTrainer
                         );
 
                 // Chosen Pokemon is locked in past here
@@ -3728,6 +3729,8 @@ public abstract class AbstractRomHandler implements RomHandler {
 //                }
 //            }
 
+
+            //TODO Debug here and filter by move power
             Move weakestTypeMove = track.stream().filter(m -> m.power > 1 && (m.type == pkmn.primaryType || m.type == pkmn.secondaryType)).findFirst().get();
             for(Move move:track){
                 if((move.type == pkmn.primaryType || move.type == pkmn.secondaryType) && move.power > 1 && weakestTypeMove.unbuffedPower * weakestTypeMove.hitCount > move.unbuffedPower * move.hitCount)
@@ -7013,7 +7016,7 @@ public abstract class AbstractRomHandler implements RomHandler {
                                                boolean noLegendaries, boolean wonderGuardAllowed,
                                                boolean usePlacementHistory, boolean swapMegaEvos,
                                                boolean abilitiesAreRandomized, boolean allowAltFormes,
-                                               boolean banIrregularAltFormes) {
+                                               boolean banIrregularAltFormes, boolean important) {
         List<Pokemon> pickFrom;
         List<Pokemon> withoutBannedPokemon;
 
@@ -7075,6 +7078,10 @@ public abstract class AbstractRomHandler implements RomHandler {
             // start with within 10% and add 5% either direction till we find
             // something
             int currentBST = current.bstForPowerLevels();
+            if (important) {
+                double randomBoost = random.nextDouble()/2 + 1;
+                currentBST = (int) (currentBST * randomBoost);
+            }
             int minTarget = currentBST - currentBST / 10;
             int maxTarget = currentBST + currentBST / 10;
             List<Pokemon> canPick = new ArrayList<>();
