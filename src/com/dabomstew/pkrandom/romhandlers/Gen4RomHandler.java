@@ -5531,17 +5531,19 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
                     else if (relationship.attacker == Type.FIGHTING && relationship.defender == Type.NORMAL) {
                         relationship.effectiveness = Effectiveness.NEUTRAL;
                     }
-                    // Change Steel 0.5x against Fire to Steel 1x to Fire !Space!
+                    // Change Steel 0.5x against Fire to Steel 1x to Fire !Space! //TODO change?
                     else if (relationship.attacker == Type.STEEL && relationship.defender == Type.FIRE) {
                         relationship.effectiveness = Effectiveness.NEUTRAL;
                     }
-                    // Ice resists water, dragon and ground
+                    // Ice resists water
                     else if (relationship.attacker == Type.WATER && relationship.defender == Type.ICE) {
                         relationship.effectiveness = Effectiveness.HALF;
                     }
+                    // Ice resists dragon
                     else if (relationship.attacker == Type.DRAGON && relationship.defender == Type.ICE) {
                         relationship.effectiveness = Effectiveness.HALF;
                     }
+                    // Ice resists ground
                     else if (relationship.attacker == Type.GROUND && relationship.defender == Type.ICE) {
                         relationship.effectiveness = Effectiveness.HALF;
                     }
@@ -5553,7 +5555,7 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
                     else if (relationship.attacker == Type.ROCK && relationship.defender == Type.WATER) {
                         relationship.effectiveness = Effectiveness.HALF;
                     }
-                    // Poison strong against fighting
+                    // Poison strong against fighting //TODO change?
                     else if (relationship.attacker == Type.POISON && relationship.defender == Type.FIGHTING) {
                         relationship.effectiveness = Effectiveness.DOUBLE;
                     }
@@ -5573,7 +5575,7 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
                     else if (relationship.attacker == Type.GRASS && relationship.defender == Type.POISON) {
                         relationship.effectiveness = Effectiveness.NEUTRAL;
                     }
-                    // Poison neutral against ground
+                    // Poison neutral against ground //TODO change?
                     else if (relationship.attacker == Type.POISON && relationship.defender == Type.GROUND) {
                         relationship.effectiveness = Effectiveness.NEUTRAL;
                     }
@@ -5585,11 +5587,11 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
                     else if (relationship.attacker == Type.DRAGON && relationship.defender == Type.BUG) {
                         relationship.effectiveness = Effectiveness.ZERO;
                     }
-                    // Psychic neutral against Bug
+                    // Psychic neutral against Bug //TODO change?
                     else if (relationship.attacker == Type.PSYCHIC && relationship.defender == Type.BUG) {
                         relationship.effectiveness = Effectiveness.NEUTRAL;
                     }
-                    // Bug resists Bug
+                    // Bug resists Bug //TODO change?
                     else if (relationship.attacker == Type.BUG && relationship.defender == Type.BUG) {
                         relationship.effectiveness = Effectiveness.HALF;
                     }
@@ -5601,7 +5603,7 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
                     else if (relationship.attacker == Type.BUG && relationship.defender == Type.ROCK) {
                         relationship.effectiveness = Effectiveness.HALF;
                     }
-                    // Fighting resists Steel
+                    // Fighting resists Steel //TODO change?
                     else if (relationship.attacker == Type.STEEL && relationship.defender == Type.FIGHTING) {
                         relationship.effectiveness = Effectiveness.HALF;
                     }

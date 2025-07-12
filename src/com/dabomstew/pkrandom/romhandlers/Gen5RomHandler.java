@@ -2558,9 +2558,6 @@ public class Gen5RomHandler extends AbstractDSRomHandler {
                 typeEffectivenessTable[psychic][steel] = Effectiveness.NEUTRAL;
                 log("Psychic neutral Steel");
 
-                typeEffectivenessTable[fight][fight] = Effectiveness.HALF;
-                log("Fight half Fight");
-
                 typeEffectivenessTable[rock][grass] = Effectiveness.HALF;
                 log("Rock half Grass ");
 
@@ -2582,8 +2579,8 @@ public class Gen5RomHandler extends AbstractDSRomHandler {
                 typeEffectivenessTable[dragon][bug] = Effectiveness.ZERO;
                 log("Dragon zero Bug ");
 
-                typeEffectivenessTable[psychic][bug] = Effectiveness.NEUTRAL;
-                log("Psychic neutral Bug ");
+                typeEffectivenessTable[psychic][bug] = Effectiveness.HALF;
+                log("Psychic HALF Bug ");
 
                 typeEffectivenessTable[bug][dragon] = Effectiveness.DOUBLE;
                 log("Bug double Dragon ");
@@ -2599,17 +2596,6 @@ public class Gen5RomHandler extends AbstractDSRomHandler {
                 typeEffectivenessTable[water][poison] = Effectiveness.HALF;
                 log("Water half Poison ");
                 logBlankLine();
-
-                typeEffectivenessTable[poison][grass] = Effectiveness.NEUTRAL;
-                log("Poison neutral Grass ");
-                logBlankLine();
-
-                typeEffectivenessTable[grass][poison] = Effectiveness.NEUTRAL;
-                log("Grass neutral Poison ");
-                logBlankLine();
-
-                typeEffectivenessTable[poison][ground] = Effectiveness.NEUTRAL;
-                log("Poison neutral Ground ");
 
                 typeEffectivenessTable[water][ice] = Effectiveness.HALF;
                 log("Water half Ice ");
