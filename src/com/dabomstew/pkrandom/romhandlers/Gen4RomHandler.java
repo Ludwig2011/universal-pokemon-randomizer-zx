@@ -5495,7 +5495,7 @@ public class Gen4RomHandler extends AbstractDSRomHandler {
                         typeEffectivenessTable.add(wantedTypeRelation);
                     }
                 }
-                // (to much overwrites other shit)
+                // (too much, overwrites other shit)
                 List<TypeRelationship> toBeTypeEffectivenessTable = new ArrayList<>();
                 for (TypeRelationship relationship : typeEffectivenessTable) {
                     toBeTypeEffectivenessTable.add(relationship);

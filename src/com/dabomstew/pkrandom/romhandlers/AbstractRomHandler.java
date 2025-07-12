@@ -3734,7 +3734,7 @@ public abstract class AbstractRomHandler implements RomHandler {
             Move weakestTypeMove = track.stream().filter(m -> m.power > 1 && (m.type == pkmn.primaryType || m.type == pkmn.secondaryType)).findFirst().get();
             for(Move move:track){
                 if((move.type == pkmn.primaryType || move.type == pkmn.secondaryType) && move.power > 1 && weakestTypeMove.unbuffedPower * weakestTypeMove.hitCount > move.unbuffedPower * move.hitCount)
-                weakestTypeMove = move;
+                    weakestTypeMove = move;
             }
             int oldMoveNumber;
             int weakestTypeMoveIndex;
