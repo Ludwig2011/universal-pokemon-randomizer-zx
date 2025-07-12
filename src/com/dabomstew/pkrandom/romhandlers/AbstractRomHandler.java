@@ -1988,9 +1988,11 @@ public abstract class AbstractRomHandler implements RomHandler {
             }
         });
         //this can fail but i am kind of fine with it. Should just auto rerandomize though
-        Move bestTypeMove = sortedMovePool.stream().filter(m -> m.type == tp.pokemon.primaryType || m.type == tp.pokemon.secondaryType).findFirst().get();
-        tp.moves[0] = bestTypeMove.number;
-        //System.out.println(bestTypeMove.name);
+        Move bestTypeMove = sortedMovePool.stream().filter(m -> m.type == tp.pokemon.primaryType || m.type == tp.pokemon.secondaryType).findAny().orElse(null);
+        if (bestTypeMove != null){
+            tp.moves[0] = bestTypeMove.number;
+            //System.out.println(bestTypeMove.name);
+        }
         int i = 0;
         for(Move m : levelMovePool) {
             if (m.power < 5) {
@@ -1998,7 +2000,9 @@ public abstract class AbstractRomHandler implements RomHandler {
             }
             i++;
         }
-        sortedMovePool.remove(bestTypeMove);
+        if (bestTypeMove != null){
+            sortedMovePool.remove(bestTypeMove);
+        }
         for(int im = 0;im<forceStartingMoveCount-1 ; im++){
             tp.moves[im+1] = sortedMovePool.get(im).number;
         }
@@ -3740,7 +3744,7 @@ public abstract class AbstractRomHandler implements RomHandler {
             int weakestTypeMoveIndex;
             if(learnt.contains(weakestTypeMove.number)){
                 weakestTypeMoveIndex = learnt.indexOf(weakestTypeMove.number);
-                oldMoveNumber = learnt.get(3);
+                oldMoveNumber = learnt.get(forceStartingMoveCount);
                 learnt.set(weakestTypeMoveIndex,oldMoveNumber);
             }
             learnt.set(forceStartingMoveCount-1,weakestTypeMove.number);

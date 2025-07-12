@@ -2587,35 +2587,27 @@ public class Gen5RomHandler extends AbstractDSRomHandler {
 
                 typeEffectivenessTable[poison][fight] = Effectiveness.DOUBLE;
                 log("Poison double Fighting ");
-                logBlankLine();
 
                 typeEffectivenessTable[poison][water] = Effectiveness.DOUBLE;
                 log("Poison double Water ");
-                logBlankLine();
 
                 typeEffectivenessTable[water][poison] = Effectiveness.HALF;
                 log("Water half Poison ");
-                logBlankLine();
 
                 typeEffectivenessTable[water][ice] = Effectiveness.HALF;
                 log("Water half Ice ");
-                logBlankLine();
 
                 typeEffectivenessTable[dragon][ice] = Effectiveness.HALF;
                 log("Dragon half Ice ");
-                logBlankLine();
 
                 typeEffectivenessTable[ground][ice] = Effectiveness.HALF;
                 log("Ground half Ice ");
-                logBlankLine();
 
                 typeEffectivenessTable[rock][water] = Effectiveness.HALF;
                 log("Rock half Water ");
-                logBlankLine();
 
                 typeEffectivenessTable[ice][water] = Effectiveness.NEUTRAL;
                 log("Ice neutral Water ");
-                logBlankLine();
                 logBlankLine();
                 writeTypeEffectivenessTable(typeEffectivenessTable, battleOverlay, typeEffectivenessTableOffset);
                 writeOverlay(romEntry.getInt("BattleOvlNumber"), battleOverlay);
