@@ -203,23 +203,13 @@ public class Pokemon implements Comparable<Pokemon> {
             spdef = (int) Math.max(1, Math.round(spdW / totW * bst)) + 10;
             speed = (int) Math.max(1, Math.round(speW / totW * bst)) + 10;
 
-        //makes speedy pokemon stronger
-        //double[] weights =  {hpW,atkW,defW,spaW,spdW};
-        //int countLessThanSpeed = 0;
-        //for (double w : weights){
-        //    if (w<speW) {
-        //        countLessThanSpeed++;
-        //    }
-        //}
-        //if (countLessThanSpeed>4) {
-        //    attack +=10;
-        //    spatk +=10;
-        //}
         if(primaryType.equals(Type.GRASS)||secondaryType.equals(Type.GRASS)){
+            System.out.println(primaryType + " received extra HP " + secondaryType);
             hp = (int) Math.round(hp*1.25);
         }
 
         if((primaryType.equals(Type.BUG)&&secondaryType.equals(Type.ICE))||(primaryType.equals(Type.ICE)&&secondaryType.equals(Type.BUG))){
+            System.out.println(primaryType + " received extra defense " + secondaryType);
             defense = (int) Math.round(defense*1.5);
             spdef = (int) Math.round(spdef*1.5);
         }

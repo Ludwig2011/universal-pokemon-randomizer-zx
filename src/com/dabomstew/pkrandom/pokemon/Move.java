@@ -103,4 +103,25 @@ public class Move {
                 + (hitratio) + ", Effect: " + effectIndex + ", Priority: " + priority;
     }
 
+    public boolean isStabAttack(Type stab1, Type stab2) {
+        return (power > 0) &&
+                (type == stab1 || type == stab2);
+    }
+
+    public boolean isQuirky() {
+        if (power > 0) return false; // don’t classify attacks
+        return !hasBeneficialStatChange(); // don’t classify boosts
+    }
+
+    public double getMovePower(Pokemon pokemon) {
+        double movePower = unbuffedPower * hitCount;
+        if (pokemon.primaryType == type || pokemon.secondaryType == type)
+            movePower = movePower * 1.5;
+        if (category == MoveCategory.PHYSICAL)
+            movePower = movePower * pokemon.attack;
+        else {
+            movePower = movePower * pokemon.spatk;
+        }
+        return movePower;
+    }
 }

@@ -1963,53 +1963,52 @@ public abstract class AbstractRomHandler implements RomHandler {
         this.setTrainers(currentTrainers, false);
     }
 
+    //Consider pokemons attack / special attack
     private void replaceTrainerPokeMoves(TrainerPokemon tp,Settings settings) {
         //System.out.println(tp.pokemon.primaryType + " " +tp.pokemon.secondaryType);
         boolean isCyclicEvolutions = settings.getEvolutionsMod() == Settings.EvolutionsMod.RANDOM_EVERY_LEVEL;
-        int forceStartingMoveCount = settings.getGuaranteedMoveCount();
         List<Move> levelMovePool = getMoveSelectionPoolAtLevel(tp,isCyclicEvolutions,true);
         if(tp.level>40){
             levelMovePool = getMoveSelectionPoolAtLevel(tp,isCyclicEvolutions,false);
         }
         List<Move> sortedMovePool = new ArrayList<>();
+        List<Move> unsortedMovePool = new ArrayList<>();
         for(Move m : levelMovePool) {
             if (m.power > 5) {
-                //System.out.println(m.name +" "+ m.type +": " +m.unbuffedPower * m.hitCount);
                 sortedMovePool.add(m);
+            } else {
+                unsortedMovePool.add(m);
             }
         }
         sortedMovePool.sort((m1, m2) -> {
-            if (m1.unbuffedPower * m1.hitCount > m2.unbuffedPower * m2.hitCount) {
+            if (m1.getMovePower(tp.pokemon) > m2.getMovePower(tp.pokemon)) {
                 return -1;
-            } else if (m1.unbuffedPower * m1.hitCount < m2.unbuffedPower * m2.hitCount) {
+            } else if (m1.getMovePower(tp.pokemon) < m2.getMovePower(tp.pokemon)) {
                 return 1;
             } else {
                 return 0;
             }
         });
-        //this can fail but i am kind of fine with it. Should just auto rerandomize though
-        Move bestTypeMove = sortedMovePool.stream().filter(m -> m.type == tp.pokemon.primaryType || m.type == tp.pokemon.secondaryType).findAny().orElse(null);
-        if (bestTypeMove != null){
-            tp.moves[0] = bestTypeMove.number;
-            //System.out.println(bestTypeMove.name);
-        }
-        int i = 0;
-        for(Move m : levelMovePool) {
-            if (m.power < 5) {
-                sortedMovePool.add(i,m);
+        int maxMoves = sortedMovePool.size() + unsortedMovePool.size();
+        for (int im = 0; im < maxMoves; im++) {
+            Move chosen = null;
+
+            if ((im == 3 && random.nextDouble() < 0.50) || im >= sortedMovePool.size()) {
+                if (!unsortedMovePool.isEmpty()) {
+                    int index = random.nextInt(unsortedMovePool.size());
+                    chosen = unsortedMovePool.remove(index);
+                }
             }
-            i++;
+
+            if (chosen == null && im < sortedMovePool.size()) {
+                chosen = sortedMovePool.get(im);
+            }
+
+            if (chosen != null) {
+                tp.moves[im] = chosen.number;
+                System.out.println(chosen.name + " " + chosen.type + ": " + chosen.getMovePower(tp.pokemon));
+            }
         }
-        if (bestTypeMove != null){
-            sortedMovePool.remove(bestTypeMove);
-        }
-        for(int im = 0;im<forceStartingMoveCount-1 ; im++){
-            tp.moves[im+1] = sortedMovePool.get(im).number;
-        }
-        //System.out.println(sortedMovePool.get(0).name +" "+ sortedMovePool.get(0).type +": " +sortedMovePool.get(0).unbuffedPower * sortedMovePool.get(0).hitCount);
-        //System.out.println(sortedMovePool.get(1).name +" "+ sortedMovePool.get(1).type +": " +sortedMovePool.get(1).unbuffedPower * sortedMovePool.get(1).hitCount);
-        //System.out.println(sortedMovePool.get(2).name +" "+ sortedMovePool.get(2).type +": " +sortedMovePool.get(2).unbuffedPower * sortedMovePool.get(2).hitCount);
-        //System.out.println(bestTypeMove.name +" "+ bestTypeMove.type +": " +bestTypeMove.unbuffedPower * bestTypeMove.hitCount);
     }
 
     @Override
