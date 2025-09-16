@@ -1989,14 +1989,29 @@ public abstract class AbstractRomHandler implements RomHandler {
                 return 0;
             }
         });
-        int maxMoves = sortedMovePool.size() + unsortedMovePool.size();
+        int maxMoves = Math.min(4, sortedMovePool.size() + unsortedMovePool.size());
         for (int im = 0; im < maxMoves; im++) {
             Move chosen = null;
 
-            if ((im == 3 && random.nextDouble() < 0.50) || im >= sortedMovePool.size()) {
+            if ((im == maxMoves-1 && im > 1 && random.nextDouble() < 0.75) || im >= sortedMovePool.size()) {
                 if (!unsortedMovePool.isEmpty()) {
-                    int index = random.nextInt(unsortedMovePool.size());
-                    chosen = unsortedMovePool.remove(index);
+                    List<Move> boosts = unsortedMovePool.stream()
+                            .filter(m -> !m.isQuirky())
+                            .toList();
+                    List<Move> quirks = unsortedMovePool.stream()
+                            .filter(Move::isQuirky)
+                            .toList();
+
+                    if (!boosts.isEmpty()) {
+                        if (random.nextDouble() < 0.9) {
+                            chosen = boosts.get(random.nextInt(boosts.size()));
+                        } else {
+                            chosen = quirks.get(random.nextInt(quirks.size()));
+                        }
+                    } else {
+                        chosen = quirks.get(random.nextInt(quirks.size()));
+                    }
+                    unsortedMovePool.remove(chosen);
                 }
             }
 
@@ -2017,7 +2032,6 @@ public abstract class AbstractRomHandler implements RomHandler {
         boolean giveToImportantPokemon = settings.isRandomizeHeldItemsForImportantTrainerPokemon();
         boolean giveToRegularPokemon = settings.isRandomizeHeldItemsForRegularTrainerPokemon();
         boolean highestLevelOnly = settings.isHighestLevelGetsItemsForTrainers();
-        boolean betterMovesets = settings.isBetterTrainerMovesets();
 
         List<Move> moves = this.getMoves();
         Map<Integer, List<MoveLearnt>> movesets = this.getMovesLearnt();

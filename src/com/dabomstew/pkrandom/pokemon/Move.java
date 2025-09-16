@@ -110,6 +110,7 @@ public class Move {
 
     public boolean isQuirky() {
         if (power > 0) return false; // don’t classify attacks
+        if (statusType != StatusType.NONE) return false;
         return !hasBeneficialStatChange(); // don’t classify boosts
     }
 
