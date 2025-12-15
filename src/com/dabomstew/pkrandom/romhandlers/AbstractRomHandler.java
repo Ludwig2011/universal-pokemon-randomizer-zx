@@ -660,6 +660,37 @@ public abstract class AbstractRomHandler implements RomHandler {
         }
     }
 
+    private int pickRandomAbilityVariation(int selectedAbility, int... alreadySetAbilities) {
+        int newAbility = selectedAbility;
+
+        while (true) {
+            Map<Integer, List<Integer>> abilityVariations = getAbilityVariations();
+            for (int baseAbility: abilityVariations.keySet()) {
+                if (selectedAbility == baseAbility) {
+                    List<Integer> variationsForThisAbility = abilityVariations.get(selectedAbility);
+                    newAbility = variationsForThisAbility.get(this.random.nextInt(variationsForThisAbility.size()));
+                    break;
+                }
+            }
+
+            boolean repeat = false;
+            for (int alreadySetAbility : alreadySetAbilities) {
+                if (alreadySetAbility == newAbility) {
+                    repeat = true;
+                    break;
+                }
+            }
+
+            if (!repeat) {
+                break;
+            }
+
+
+        }
+
+        return newAbility;
+    }
+
     private int pickRandomAbility(int maxAbility, List<Integer> bannedAbilities, boolean useVariations,
                                   int... alreadySetAbilities) {
         int newAbility;
@@ -681,14 +712,7 @@ public abstract class AbstractRomHandler implements RomHandler {
 
             if (!repeat) {
                 if (useVariations) {
-                    Map<Integer,List<Integer>> abilityVariations = getAbilityVariations();
-                    for (int baseAbility: abilityVariations.keySet()) {
-                        if (newAbility == baseAbility) {
-                            List<Integer> variationsForThisAbility = abilityVariations.get(newAbility);
-                            newAbility = variationsForThisAbility.get(this.random.nextInt(variationsForThisAbility.size()));
-                            break;
-                        }
-                    }
+                    newAbility = pickRandomAbilityVariation(newAbility, alreadySetAbilities);
                 }
                 break;
             }
@@ -3516,6 +3540,10 @@ public abstract class AbstractRomHandler implements RomHandler {
             }
 
             if (generationOfPokemon() >= 3) {
+                // Luster Purge 95 power
+                updateMovePower(moves, Moves.lusterPurge, 95);
+                // Mist Ball 95 power
+                updateMovePower(moves, Moves.mistBall, 95);
                 // Slack Off 5 PP
                 updateMovePP(moves, Moves.slackOff, 5);
             }
@@ -3531,8 +3559,8 @@ public abstract class AbstractRomHandler implements RomHandler {
             }
 
             if (generationOfPokemon() >= 8) {
-                // Grassy Glide 60 Power
-                updateMovePower(moves, Moves.grassyGlide, 60);
+                // Grassy Glide 55 Power
+                updateMovePower(moves, Moves.grassyGlide, 55);
                 // Wicked Blow 75 Power
                 updateMovePower(moves, Moves.wickedBlow, 75);
                 // Glacial Lance 120 Power
@@ -5482,7 +5510,7 @@ public abstract class AbstractRomHandler implements RomHandler {
 
         Collections.shuffle(newItems, this.random);
         Collections.shuffle(newTMs, this.random);
-
+        
         this.setRegularFieldItems(newItems);
         this.setFieldTMs(newTMs);
     }
