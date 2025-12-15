@@ -2003,15 +2003,17 @@ public abstract class AbstractRomHandler implements RomHandler {
                             .toList();
 
                     if (!boosts.isEmpty()) {
-                        if (random.nextDouble() < 0.9) {
+                        if (random.nextDouble() < 0.9 || quirks.isEmpty()) {
                             chosen = boosts.get(random.nextInt(boosts.size()));
                         } else {
                             chosen = quirks.get(random.nextInt(quirks.size()));
                         }
-                    } else {
+                    } else if(!quirks.isEmpty()) {
                         chosen = quirks.get(random.nextInt(quirks.size()));
                     }
-                    unsortedMovePool.remove(chosen);
+                    if (chosen != null) {
+                        unsortedMovePool.remove(chosen);
+                    }
                 }
             }
 
@@ -2021,7 +2023,7 @@ public abstract class AbstractRomHandler implements RomHandler {
 
             if (chosen != null) {
                 tp.moves[im] = chosen.number;
-                System.out.println(chosen.name + " " + chosen.type + ": " + chosen.getMovePower(tp.pokemon));
+                //System.out.println(chosen.name + " " + chosen.type + ": " + chosen.getMovePower(tp.pokemon));
             }
         }
     }
@@ -2993,6 +2995,9 @@ public abstract class AbstractRomHandler implements RomHandler {
                 }
                 if (mv.name.contains("Beat Up")){
                     mv.power = random.nextInt(5) * 5 + 10; // 10 ... 30
+                }
+                if (mv.name.contains("Frost Breath")){
+                    mv.power = mv.power/2;
                 }
                 if (mv.hitCount != 1) {
                     // Divide randomized power by average hit count, round to
